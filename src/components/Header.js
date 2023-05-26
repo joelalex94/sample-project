@@ -12,13 +12,13 @@ const Header = () => {
     const location= useLocation();
     
     useEffect(() => {
-        if(location.pathname == '/'){
+        if(location.pathname === '/'){
             setActiveTab("Home");
-        }else if (location.pathname == '/employee'){
+        }else if (location.pathname === '/employee'){
             setActiveTab("Employee");
-        }else if(location.pathname == '/extra-hour'){
+        }else if(location.pathname === '/extra-hour'){
             setActiveTab("Extrahour");
-        }else if(location.pathname == '/order'){
+        }else if(location.pathname === '/order'){
             setActiveTab("Order");
         }
 
