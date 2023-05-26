@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 import {Link, useLocation} from "react-router-dom";
 
@@ -8,6 +8,21 @@ import './Header.css';
 const Header = () => {
     const [activeTab, setActiveTab] = useState("Home");
     const [isSideNavOpen, setIsSideNavOpen] = useState(false);
+
+    const location= useLocation();
+    
+    useEffect(() => {
+        if(location.pathname == '/'){
+            setActiveTab("Home");
+        }else if (location.pathname == '/employee'){
+            setActiveTab("Employee");
+        }else if(location.pathname == '/extra-hour'){
+            setActiveTab("Extrahour");
+        }else if(location.pathname == '/order'){
+            setActiveTab("Order");
+        }
+
+    },[location]);
 
     const toggleSideNav = () => {
         setIsSideNavOpen(!isSideNavOpen);
