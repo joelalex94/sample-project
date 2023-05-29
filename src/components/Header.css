@@ -1,0 +1,10 @@
+a:-webkit-any-link {
+   
+    text-decoration: none!important;
+    
+}
+
+.d-flex {
+    display: flex!important;
+    margin-left: 40%!important;
+}
