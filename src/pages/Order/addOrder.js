@@ -3,6 +3,7 @@ import {useHistory, useParams} from "react-router-dom";
 import {db, storage} from '../../firebase';
 import { collection, addDoc } from "firebase/firestore";
 import { getDownloadURL, uploadBytesResumable, ref } from "firebase/storage";
+import { format, addDays } from 'date-fns';
 
 
 
@@ -21,18 +22,40 @@ const AddOrder = () => {
 
     const [percent, setPercent] = useState(0);
     
-   
+    useEffect(() => {
+        // Get the current date
+        const today = new Date();
+    
+        // Format the start date as 'yyyy-mm-dd'
+        const formattedStartDate = format(today, 'yyyy-MM-dd');
+    
+        // Add 15 days to the current date
+        const futureDate = addDays(today, 15);
+    
+        // Format the end date as 'yyyy-mm-dd'
+        const formattedEndDate = format(futureDate, 'yyyy-MM-dd');
+    
+        // Set the values of start and end dates in state
+        setOrderDate(formattedStartDate);
+        setDeliveryDate(formattedEndDate);
+      }, []);
+
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
         setFile(selectedFile);
     }
 
-    // const handleDate = (e) => {
-    //     var date = new Date(e.target.value);
-    //     setOrderDate(date);
-    //     setDeliveryDate(date  + 1);
-    //     console.log( new Date(orderDate).toISOString() ,  e.target.value);
-    // }
+    const handleDate = (e) => {
+        const date = new Date(e.target.value);
+        const currentDate = format(date, 'yyyy-MM-dd');
+        const deadlineDate = addDays(date, 15);
+        const modifiedDeadlineDate = format(deadlineDate, 'yyyy-MM-dd');
+
+        setOrderDate(currentDate);
+        setDeliveryDate(modifiedDeadlineDate);
+        
+        
+    }
 
 
     const handleSubmit = async (e) => {
@@ -92,11 +115,12 @@ const AddOrder = () => {
                         <form className="row g-3" onSubmit={handleSubmit}>
                             <div className="col-md-6">
                                 <label htmlFor="orderDate" className="form-label">Order Date</label>
-                                <input type="date" className="form-control" id="orderDate" name="orderDate"  value={orderDate}  onChange={(e) => setOrderDate(e.target.value)}/>
+                                <input type="date" className="form-control" id="orderDate" name="orderDate"  value={orderDate} min={orderDate}  onChange={handleDate}/>
+                                
                             </div>
                             <div className="col-md-6">
                                 <label htmlFor="deliveryDate" className="form-label">Delivery Date</label>
-                                <input type="date" className="form-control" id="deliveryDate" name="deliveryDate"  value={deliveryDate}  onChange={(e) => setDeliveryDate(e.target.value)}/>
+                                <input type="date" className="form-control" id="deliveryDate" name="deliveryDate"  value={deliveryDate} min={deliveryDate}  max={deliveryDate} onChange={(e) => setDeliveryDate(e.target.value)}/>
                             </div>
                             <div className="col-md-6">
                                 <label htmlFor="clientName" className="form-label">Client Name</label>
