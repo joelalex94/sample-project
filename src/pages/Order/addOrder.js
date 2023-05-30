@@ -1,13 +1,14 @@
 import React,{useState, useEffect} from "react";
 import {useHistory, useParams} from "react-router-dom";
-import {db} from '../../firebase';
+import {db, storage} from '../../firebase';
 import { collection, addDoc } from "firebase/firestore";
+import { getDownloadURL, uploadBytesResumable, ref } from "firebase/storage";
 
 
 
 const AddOrder = () => {
-    const [items, setItems] = useState([]);
-    const [attachments, setAttachments] = useState('');
+    // const [items, setItems] = useState([]);
+    const [file, setFile] = useState(null);
     const [orderDate, setOrderDate] = useState('');
     const [deliveryDate, setDeliveryDate] = useState('');
     const [clientName, setClientName] = useState('');
@@ -16,23 +17,62 @@ const AddOrder = () => {
     const [addressInfo, setAddressInfo] = useState('');
     const [status, setStatus] = useState('');
     const [notes, setNotes] = useState('');
+    const [fileUrl, setFileUrl] = useState('');
 
+    const [percent, setPercent] = useState(0);
+    
    
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
-        setAttachments(selectedFile);
+        setFile(selectedFile);
     }
+
+    // const handleDate = (e) => {
+    //     var date = new Date(e.target.value);
+    //     setOrderDate(date);
+    //     setDeliveryDate(date  + 1);
+    //     console.log( new Date(orderDate).toISOString() ,  e.target.value);
+    // }
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();  
        
+        
         try {
-            const storageRef = db.ref();
-            const fileRef = storageRef.child(attachments.name);
-            await fileRef.put(attachments);
-            const fileUrl = await fileRef.getDownloadURL();
+            if (!file) {
+                alert("Please upload an image first!");
+            }
+     
+            const storageRef = ref(storage, `/files/${file.name}`);
+            
+            // progress can be paused and resumed. It also exposes progress updates.
+            // Receives the storage reference and the file to upload.
+            const uploadTask = uploadBytesResumable(storageRef, file);
+            
+            uploadTask.on(
+                "state_changed",
+                (snapshot) => {
+                    const percent = Math.round(
+                        (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                    );
+     
+                    // update progress
+                    setPercent(percent);
+                },
+                (err) => console.log(err),
+                () => {
+                    // download url
+                    getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+                        const uls = url;
+                        setFileUrl(uls);
+                    });
+                }
+            );
+           
+
             const docRef = await addDoc(collection(db, "items"), {
-              orderDate:orderDate, deliveryDate:deliveryDate,clientName:clientName,clientSource:clientSource,address:address,addressInfo:addressInfo, status:status,notes:notes,attachments:fileUrl 
+              orderDate:orderDate, deliveryDate:deliveryDate,clientName:clientName,clientSource:clientSource,address:address,addressInfo:addressInfo, status:status,notes:notes,file:fileUrl, 
             });
             console.log("Document written with ID: ", docRef.id  , fileUrl);
           } catch (e) {
@@ -94,7 +134,7 @@ const AddOrder = () => {
                             
                             <div className="col-md-6">
                                 <label htmlFor="attachments" className="form-label">Attachments</label>
-                                <input type="text" className="form-control" id="attachments" name="attachments"  value={attachments} onChange={(e) => setAttachments(e.target.value)}/>
+                                <input type="file" className="form-control" id="attachments" name="attachments"  value={''} onChange={handleFileChange}/>
                             </div>
                             <div className="col-12">
                                 <label htmlFor="notes" className="form-label">Notes</label>
