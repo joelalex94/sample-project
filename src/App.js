@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import View from './pages/View';
 import Order from './pages/Order';
 import AddOrder from './pages/Order/addOrder';
+import EditOrder from './pages/Order/editOrder';
 import Employee from './pages/Employee';
 import ExtraHour from './pages/Extrahour';
 
@@ -19,6 +20,7 @@ function App() {
           <Route exact path="/view/:id" Component={View}/>
           <Route exact path="/order" Component={Order}/>
           <Route exact path="/order/addorder" Component={AddOrder}/>
+          <Route exact path="/order/editorder/:id" Component={AddOrder}/>
           <Route exact path="/employee" Component={Employee}/>
           <Route exact path="/extra-hours" Component={ExtraHour}/>
         </Routes>

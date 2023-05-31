@@ -3,6 +3,7 @@ import {db} from '../../firebase';
 import { useState ,useEffect  } from 'react';
 import "./index.css";
 import {Link} from "react-router-dom";
+import OrderDataService from '../../services/orderservice';
 
 
 
@@ -27,6 +28,11 @@ const Order = () => {
     useEffect(()=>{
         fetchPost();
     }, [])
+
+    const deleteHandler = async (id) => {
+         await OrderDataService.deleteOrder(id);
+         fetchPost();
+    }
 
 
     return ( 
@@ -81,8 +87,11 @@ const Order = () => {
                                 <td>{item.notes}</td>
                                 <td>
                                     <div className="d-flex ms-auto">
-                                        <button type="button" className="btn btn-secondary mt-0 me-0"><i className="bi bi-pencil"></i></button>
-                                        <button type="button" className="btn btn-success mt-0 me-0"><i className="bi bi-eye"></i></button>
+                                        <Link to={`/order/editorder/${item.id}`}>
+                                            <button type="button" className="btn btn-secondary m-1"><i className="bi bi-pencil"></i></button>
+                                        </Link>
+                                        <button type="button" className="btn btn-success m-1"><i className="bi bi-eye"></i></button>
+                                        <button type="button" className="btn btn-danger m-1"  onClick={(e) => deleteHandler(item.id)}><i className="bi bi-trash"></i></button>
                                     </div>
                                 </td>
                             </tr>

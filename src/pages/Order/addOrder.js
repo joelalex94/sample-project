@@ -1,14 +1,17 @@
 import React,{useState, useEffect} from "react";
-import {useHistory, useParams} from "react-router-dom";
+import {useNavigate , useParams} from "react-router-dom";
 import {db, storage} from '../../firebase';
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDoc , getDocs, doc} from "firebase/firestore";
 import { getDownloadURL, uploadBytesResumable, ref } from "firebase/storage";
 import { format, addDays } from 'date-fns';
+import OrderDataService from '../../services/orderservice';
+import { Alert } from "bootstrap";
+
 
 
 
 const AddOrder = () => {
-    // const [items, setItems] = useState([]);
+    const [items, setItems] = useState([]);
     const [file, setFile] = useState(null);
     const [orderDate, setOrderDate] = useState('');
     const [deliveryDate, setDeliveryDate] = useState('');
@@ -21,6 +24,39 @@ const AddOrder = () => {
     const [fileUrl, setFileUrl] = useState('');
 
     const [percent, setPercent] = useState(0);
+
+    const [message, setMessage] =useState({error : false, msg : ""});
+    const {id} = useParams();
+
+    const history = useNavigate ();
+    const fetchOrder = async (para) => {
+       
+        try {
+            const docSnap = await OrderDataService.getOrder(id);
+            console.log(docSnap.data());
+            setOrderDate(docSnap.data().orderDate);
+            setDeliveryDate(docSnap.data().deliveryDate);
+            setClientSource(docSnap.data().clientSource);
+            setClientName(docSnap.data().clientName);
+            setAddress(docSnap.data().address);
+            setAddressInfo(docSnap.data().addressInfo);
+            setStatus(docSnap.data().status);
+            setNotes(docSnap.data().notes);
+            setFile(docSnap.data().file);
+           
+          } catch (error) {
+            console.error ('Error fetching item: ', error);
+        }
+       
+    }
+
+    useEffect(()=>{
+        if(id !== undefined && id !== ""){
+            fetchOrder();
+        }
+        
+    }, [id])
+
     
     useEffect(() => {
         // Get the current date
@@ -60,51 +96,143 @@ const AddOrder = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();  
-       
+        setMessage("");
+
+        const newOrder = {
+            file : fileUrl, 
+            orderDate : orderDate, 
+            deliveryDate : deliveryDate, 
+            clientName : clientName, 
+            clientSource: clientSource,
+            address : address, 
+            addressInfo : addressInfo,
+            status : status,
+            notes :notes
+        }
+
         
-        try {
-            if (!file) {
-                alert("Please upload an image first!");
-            }
-     
-            const storageRef = ref(storage, `/files/${file.name}`);
-            
-            // progress can be paused and resumed. It also exposes progress updates.
-            // Receives the storage reference and the file to upload.
-            const uploadTask = uploadBytesResumable(storageRef, file);
-            
-            uploadTask.on(
-                "state_changed",
-                (snapshot) => {
-                    const percent = Math.round(
-                        (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-                    );
-     
-                    // update progress
-                    setPercent(percent);
-                },
-                (err) => console.log(err),
-                () => {
-                    // download url
-                    getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-                        const uls = url;
-                        setFileUrl(uls);
-                    });
+
+        try{
+
+            if(id !== undefined && id !== ""){
+                
+                const storageRef = ref(storage, `/files/${file.name}`);
+                
+                // progress can be paused and resumed. It also exposes progress updates.
+                // Receives the storage reference and the file to upload.
+                const uploadTask = uploadBytesResumable(storageRef, file);
+                
+                uploadTask.on(
+                    "state_changed",
+                    (snapshot) => {
+                        const percent = Math.round(
+                            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                        );
+        
+                        // update progress
+                        setPercent(percent);
+                    },
+                    (err) => console.log(err),
+                    () => {
+                        // download url
+                        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+                            const uls = url;
+                            setFileUrl(uls);
+                        });
+                    }
+                );
+                await OrderDataService.updateOrder(id, newOrder);
+    
+                setMessage({error:false, msg:"New order added successfully!"});
+                history('/order');
+            }else{
+                if (!file) {
+                    alert("Please upload an image first!");
                 }
-            );
+        
+                const storageRef = ref(storage, `/files/${file.name}`);
+                
+                // progress can be paused and resumed. It also exposes progress updates.
+                // Receives the storage reference and the file to upload.
+                const uploadTask = uploadBytesResumable(storageRef, file);
+                
+                uploadTask.on(
+                    "state_changed",
+                    (snapshot) => {
+                        const percent = Math.round(
+                            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                        );
+        
+                        // update progress
+                        setPercent(percent);
+                    },
+                    (err) => console.log(err),
+                    () => {
+                        // download url
+                        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+                            const uls = url;
+                            setFileUrl(uls);
+                        });
+                    }
+                );
+                
+                // await OrderDataService.addOrder(newOrder);
+    
+                await OrderDataService.addOrder(newOrder);
+    
+                setMessage({error:false, msg:"New order added successfully!"});
+                history('/order');
+            }
+            
+        }catch(err){
+            setMessage({error: true, msg : err.message});
+            console.log(err)
+        }
+        
+        // try {
+        //     if (!file) {
+        //         alert("Please upload an image first!");
+        //     }
+     
+        //     const storageRef = ref(storage, `/files/${file.name}`);
+            
+        //     // progress can be paused and resumed. It also exposes progress updates.
+        //     // Receives the storage reference and the file to upload.
+        //     const uploadTask = uploadBytesResumable(storageRef, file);
+            
+        //     uploadTask.on(
+        //         "state_changed",
+        //         (snapshot) => {
+        //             const percent = Math.round(
+        //                 (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        //             );
+     
+        //             // update progress
+        //             setPercent(percent);
+        //         },
+        //         (err) => console.log(err),
+        //         () => {
+        //             // download url
+        //             getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+        //                 const uls = url;
+        //                 setFileUrl(uls);
+        //             });
+        //         }
+        //     );
            
 
-            const docRef = await addDoc(collection(db, "items"), {
-              orderDate:orderDate, deliveryDate:deliveryDate,clientName:clientName,clientSource:clientSource,address:address,addressInfo:addressInfo, status:status,notes:notes,file:fileUrl, 
-            });
-            console.log("Document written with ID: ", docRef.id  , fileUrl);
-          } catch (e) {
-            console.error("Error adding document: ", e);
-          }
+        //     const docRef = await addDoc(collection(db, "items"), {
+        //       orderDate:orderDate, deliveryDate:deliveryDate,clientName:clientName,clientSource:clientSource,address:address,addressInfo:addressInfo, status:status,notes:notes,file:fileUrl, 
+        //     });
+        //     console.log("Document written with ID: ", docRef.id  , fileUrl);
+        //   } catch (e) {
+        //     console.error("Error adding document: ", e);
+        //   }
     }
     
     return ( 
         <div>
+           
             <h2>Add Order</h2>
             <div className="container">
                 <div className="card">
@@ -120,7 +248,7 @@ const AddOrder = () => {
                             </div>
                             <div className="col-md-6">
                                 <label htmlFor="deliveryDate" className="form-label">Delivery Date</label>
-                                <input type="date" className="form-control" id="deliveryDate" name="deliveryDate"  value={deliveryDate} min={deliveryDate}  max={deliveryDate} onChange={(e) => setDeliveryDate(e.target.value)}/>
+                                <input type="date" className="form-control" id="deliveryDate" name="deliveryDate"  value={deliveryDate } min={deliveryDate}  max={deliveryDate} onChange={(e) => setDeliveryDate(e.target.value)}/>
                             </div>
                             <div className="col-md-6">
                                 <label htmlFor="clientName" className="form-label">Client Name</label>
@@ -128,7 +256,7 @@ const AddOrder = () => {
                             </div>
                             <div className="col-md-6">
                                 <label htmlFor="clientSource" className="form-label">Client Source</label>
-                                <input type="text" className="form-control" id="clientSource" name="clientSource"  value={clientSource}  onChange={(e) => setClientSource(e.target.value)}/>
+                                <input type="text" className="form-control" id="clientSource" name="clientSource"  value={clientName}  onChange={(e) => setClientSource(e.target.value)}/>
                             </div>
                             <div className="col-12">
                                 <label htmlFor="address" className="form-label">Address</label>
@@ -148,7 +276,7 @@ const AddOrder = () => {
                             </div> */}
                             <div className="col-md-6">
                                 <label htmlFor="status" className="form-label">Status</label>
-                                <select id="status" className="form-select" placeholder="status" name="status"value={status} onChange={(e) => setStatus(e.target.value)} >
+                                <select id="status" className="form-select" placeholder="status" name="status"value={status } onChange={(e) => setStatus(e.target.value)} >
                                 <option> Status </option>
                                 <option value="pending"> Pending </option>
                                 <option value="in-progress"> In Progress</option>
@@ -162,7 +290,7 @@ const AddOrder = () => {
                             </div>
                             <div className="col-12">
                                 <label htmlFor="notes" className="form-label">Notes</label>
-                                <textarea type="text" className="form-control" id="notes" placeholder="1234 Main St" name="notes" value={notes} onChange={(e) => setNotes(e.target.value)}> 
+                                <textarea type="text" className="form-control" id="notes" placeholder="1234 Main St" name="notes" value={notes } onChange={(e) => setNotes(e.target.value)}> 
                                 
                                 </textarea>
                                 
