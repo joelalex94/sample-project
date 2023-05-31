@@ -8,6 +8,8 @@ import Order from './pages/Order';
 import AddOrder from './pages/Order/addOrder';
 import Employee from './pages/Employee';
 import ExtraHour from './pages/Extrahour';
+import AddEmployee from './pages/Employee/addEmployee';
+import AddHour from './pages/Extrahour/addHour';
 
 function App() {
   return (  
@@ -21,6 +23,8 @@ function App() {
           <Route exact path="/order/addorder" Component={AddOrder}/>
           <Route exact path="/employee" Component={Employee}/>
           <Route exact path="/extra-hours" Component={ExtraHour}/>
+          <Route exact path="/employee/addemployee" Component={AddEmployee}/>
+          <Route exact path="/extra-hours/addhour" Component={AddHour}/>
         </Routes>
       </div>
     </BrowserRouter>
