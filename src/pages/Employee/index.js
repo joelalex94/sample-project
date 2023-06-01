@@ -1,6 +1,28 @@
+import { collection, getDocs } from "firebase/firestore";
+import {db} from '../../firebase';
+import { useState ,useEffect  } from 'react';
 import {Link} from "react-router-dom";
 
 const Employee = () => {
+
+    const [employees, setEmployees] = useState([]); 
+
+    const fetchPost = async () => {
+       
+        await getDocs(collection(db, "employees"))
+            .then((querySnapshot)=>{              
+                const newData = querySnapshot.docs
+                    .map((doc) => ({...doc.data(), id:doc.id }));
+                    setEmployees(newData);                
+                console.log(newData.length);
+            })
+       
+    }
+
+    useEffect(()=>{
+        fetchPost();
+    }, [])
+
     return ( 
         <>
             <div className="container">
@@ -25,29 +47,28 @@ const Employee = () => {
                         <thead>
                             <tr>
                             <th scope="col">#</th>
-                            <th scope="col">First</th>
-                            <th scope="col">Last</th>
-                            <th scope="col">Handle</th>
+                            <th scope="col">Employee Name</th>
+                            <th scope="col">Designation</th>
+                            <th scope="col">Phone</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>@mdo</td>
+                        {employees.map((item,index) => (
+                            
+                            <tr key={item.id}>
+                                <th scope="row">{index+1}</th>
+                                <td>{item.clientName}</td>
+                                <td>{item.designation}</td>
+                                <td>{item.phone}</td>
+                                
+                                <td>
+                                    <div className="d-flex ms-auto">
+                                        <button type="button" className="btn btn-secondary mt-0 me-0"><i className="bi bi-pencil"></i></button>
+                                        <button type="button" className="btn btn-success mt-0 me-0"><i className="bi bi-eye"></i></button>
+                                    </div>
+                                </td>
                             </tr>
-                            <tr>
-                            <th scope="row">2</th>
-                            <td>Jacob</td>
-                            <td>Thornton</td>
-                            <td>@fat</td>
-                            </tr>
-                            <tr>
-                            <th scope="row">3</th>
-                            <td >Larry the Bird</td>
-                            <td>@twitter</td>
-                            </tr>
+                        ))}
                         </tbody>
                         </table>
                     </div>

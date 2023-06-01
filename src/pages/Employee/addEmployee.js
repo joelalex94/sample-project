@@ -4,7 +4,7 @@ import {db} from '../../firebase';
 import { collection, addDoc } from "firebase/firestore";
 
 const AddEmployee = () => {
-    const [items, setItems] = useState([]);
+    const [employees, setEmployees] = useState([]);
     const [clientName, setClientName] = useState('');
     const [designation, setDesignation] = useState('');
     const [phone, setPhone] = useState('');
@@ -13,10 +13,10 @@ const AddEmployee = () => {
         e.preventDefault();  
        
         try {
-            const docRef = await addDoc(collection(db, "items"), {
+            const docRef = await addDoc(collection(db, "employees"), {
               clientName:clientName,designation:designation,phone:phone
             });
-            // console.log("Document written with ID: ", docRef.id  , fileUrl);
+            console.log("Document written with ID: ", docRef.id);
           } catch (e) {
             console.error("Error adding document: ", e);
           }
@@ -38,9 +38,9 @@ const AddEmployee = () => {
                         
                         <select id="designation" className="form-select" placeholder="designation" name="designation" value={designation} onChange={(e) => setDesignation(e.target.value)} >
                         <option> Designation </option>
-                        <option value="pending"> Test1 </option>
-                        <option value="in-progress"> Test2 </option>
-                        <option value="completed"> Test3 </option>
+                        <option value="Test1"> Test1 </option>
+                        <option value="Test2"> Test2 </option>
+                        <option value="Test3"> Test3 </option>
                         </select>
                     </div>
                     

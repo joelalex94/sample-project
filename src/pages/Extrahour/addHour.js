@@ -5,7 +5,7 @@ import { collection, addDoc } from "firebase/firestore";
 
 const AddHour = () => {
 
-    const [items, setItems] = useState([]);
+    const [extraHours, setExtraHours] = useState([]);
     const [clientName, setClientName] = useState('');
     const [orderDate, setOrderDate] = useState('');
     const [hours, setHours] = useState('');
@@ -14,10 +14,10 @@ const AddHour = () => {
         e.preventDefault();  
        
         try {
-            const docRef = await addDoc(collection(db, "items"), {
+            const docRef = await addDoc(collection(db, "extraHours"), {
               clientName:clientName,orderDate:orderDate,hours:hours
             });
-            // console.log("Document written with ID: ", docRef.id  , fileUrl);
+            console.log("Document written with ID: ", docRef.id );
           } catch (e) {
             console.error("Error adding document: ", e);
           }
@@ -28,7 +28,7 @@ const AddHour = () => {
             <h2>Add Extra Hours</h2>
             <div className="container">
                 
-                <form className="row g-3" >
+                <form className="row g-3" onSubmit={handleSubmit}>
 
                     <div className="col-md-6">
                         
@@ -39,9 +39,9 @@ const AddHour = () => {
                         
                         <select id="clientName" className="form-select" placeholder="Employee Name" name="name" value={clientName} onChange={(e) => setClientName(e.target.value)}>
                         <option> Employee Name </option>
-                        <option value="pending"> Test1 </option>
-                        <option value="in-progress"> Test2 </option>
-                        <option value="completed"> Test3 </option>
+                        <option value="Test1"> Test1 </option>
+                        <option value="Test2"> Test2 </option>
+                        <option value="Test3"> Test3 </option>
                         </select>
                     </div>
                     
