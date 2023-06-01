@@ -4,6 +4,9 @@ import { useState ,useEffect  } from 'react';
 import "./index.css";
 import {Link} from "react-router-dom";
 import OrderDataService from '../../services/orderservice';
+import BootstrapTable from "react-bootstrap-table-next";
+import'react-bootstrap-table-next/dist/react-bootstrap-table2.css';
+import paginationFactory from "react-bootstrap-table2-paginator";
 
 
 
@@ -12,13 +15,51 @@ const Order = () => {
 
     const [items, setItems] = useState([]); 
 
+    const columns = [
+        {dataField:  'no' , text : "No"},
+        {dataField:'orderDate', text : "Order Date", sort:true},
+        {dataField:'deliveryDate', text : "Delivery Date", sort:true},
+        {dataField:'clientName', text : "Client Name", sort:true},
+        {dataField:'clientSource', text : "Client Source"},
+        {dataField:'address', text : "Address"},
+        {dataField:'addressInfo', text : "Address Info"},
+        {dataField:'status', text : "Status", sort:true},
+        {dataField:'notes', text : "Notes"},
+      
+    ]
+    const pagination = paginationFactory({
+        page : 0, // Specify the current page. It's necessary when remote is enabled
+        sizePerPage : 5, // Specify the size per page. It's necessary when remote is enabled
+        
+        pageStartIndex: 0, // first page will be 0, default is 1
+        paginationSize: 3,  // the pagination bar size, default is 5
+        showTotal: true, // display pagination information
+       
+        alwaysShowAllBtns: true, // always show the next and previous page button
+        firstPageText: 'First', // the text of first page button
+        prePageText: 'Prev', // the text of previous page button
+        nextPageText: 'Next', // the text of next page button
+        lastPageText: 'Last', // the text of last page button
+       
+        onPageChange: (page, sizePerPage) => {
+            console.log('page',page);
+            console.log('sizePerPage',sizePerPage);
+        }, // callback function when page was changing
+        onSizePerPageChange: (sizePerPage, page) => {
+            console.log('page',page);
+            console.log('sizePerPage',sizePerPage);
+        }// callback function when page size was changing
+     
+      });
+   
+
 
     const fetchPost = async () => {
        
         await getDocs(collection(db, "items"))
             .then((querySnapshot)=>{              
                 const newData = querySnapshot.docs
-                    .map((doc) => ({...doc.data(), id:doc.id }));
+                    .map((doc,index) => ({...doc.data(), id:doc.id, no:index+1}));
                     setItems(newData);                
                 console.log(newData.length);
             })
@@ -54,8 +95,19 @@ const Order = () => {
             </div>
             <div className="container">
                 <div className="card">
-                    <div className="card-body d-md-flex justify-content-md-end">
-                    <table className="table">
+                    <div >
+
+                        <BootstrapTable 
+                            bootstrap4 
+                            keyField='id' 
+                            columns={columns} 
+                            data={items}
+                            pagination={pagination}
+                            
+
+                        />
+
+                    {/* <table className="table">
                         <thead>
                             <tr>
                             <th scope="col">#</th>
@@ -99,7 +151,7 @@ const Order = () => {
                            
                             
                         </tbody>
-                        </table>
+                        </table> */}
                     </div>
                 </div>
             </div>

@@ -11,6 +11,8 @@
     "date-fns": "^2.30.0",
     "firebase": "^9.22.1",
     "react": "^18.2.0",
+    "react-bootstrap-table-next": "^4.0.3",
+    "react-bootstrap-table2-paginator": "^2.1.2",
     "react-datepicker": "^4.12.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.11.2",
