@@ -23,6 +23,7 @@ function App() {
           <Route exact path="/order" Component={Order}/>
           <Route exact path="/order/addorder" Component={AddOrder}/>
           <Route exact path="/order/editorder/:id" Component={AddOrder}/>
+          <Route exact path="/order/editorder/:id" Component={AddOrder}/>
           <Route exact path="/employee" Component={Employee}/>
           <Route exact path="/extra-hours" Component={ExtraHour}/>
           <Route exact path="/employee/addemployee" Component={AddEmployee}/>

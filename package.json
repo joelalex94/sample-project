@@ -11,12 +11,12 @@
     "date-fns": "^2.30.0",
     "firebase": "^9.22.1",
     "react": "^18.2.0",
-    "react-bootstrap-table-next": "^4.0.3",
-    "react-bootstrap-table2-paginator": "^2.1.2",
-    "react-datepicker": "^4.12.0",
+    "react-data-table-component": "^7.5.3",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.11.2",
     "react-scripts": "5.0.1",
+    "styled-component": "^2.8.0",
+    "styled-components": "^5.3.11",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

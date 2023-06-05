@@ -4,9 +4,10 @@ import { useState ,useEffect  } from 'react';
 import "./index.css";
 import {Link} from "react-router-dom";
 import OrderDataService from '../../services/orderservice';
-import BootstrapTable from "react-bootstrap-table-next";
-import'react-bootstrap-table-next/dist/react-bootstrap-table2.css';
-import paginationFactory from "react-bootstrap-table2-paginator";
+// import BootstrapTable from "react-bootstrap-table-next";
+// import'react-bootstrap-table-next/dist/react-bootstrap-table2.css';
+// import paginationFactory from "react-bootstrap-table2-paginator";
+import DataTable from "react-data-table-component";
 
 
 
@@ -14,46 +15,32 @@ const Order = () => {
 
 
     const [items, setItems] = useState([]); 
+    const [search, setSearch] = useState(''); 
+    const [filteritems, setFilterItems] = useState([]); 
 
     const columns = [
-        {dataField:  'no' , text : "No"},
-        {dataField:'orderDate', text : "Order Date", sort:true},
-        {dataField:'deliveryDate', text : "Delivery Date", sort:true},
-        {dataField:'clientName', text : "Client Name", sort:true},
-        {dataField:'clientSource', text : "Client Source"},
-        {dataField:'address', text : "Address"},
-        {dataField:'addressInfo', text : "Address Info"},
-        {dataField:'status', text : "Status", sort:true},
-        {dataField:'notes', text : "Notes"},
-      
-    ]
-    const pagination = paginationFactory({
-        page : 0, // Specify the current page. It's necessary when remote is enabled
-        sizePerPage : 5, // Specify the size per page. It's necessary when remote is enabled
-        
-        pageStartIndex: 0, // first page will be 0, default is 1
-        paginationSize: 3,  // the pagination bar size, default is 5
-        showTotal: true, // display pagination information
+        {name : "No", selector:(row) => row.no},
+        {name : "Order Date", selector:(row) => row.orderDate, sortable:true},
+        {name : "Delivery Date", selector:(row) => row.deliveryDate, sortable:true},
+        {name : "Client Name", selector:(row) => row.clientName, sortable:true},
+        {name : "Client Source", selector:(row) => row.clientSource, sortable:true},
+        {name : "Address", selector:(row) => row.address},
+        {name : "Address Info", selector:(row) => row.addressInfo},
+        {name : "Status", selector:(row) => row.status, sortable:true},
+        {name : "Notes", selector:(row) => row.notes},
+        {   
+            name:"Action",
+            cell: (row ) =>[ 
+                <Link to={`/order/editorder/${row.id}`}><button type="button" className="btn btn-secondary m-1"><i className="bi bi-pencil"></i></button></Link>,
+                <button type="button" className="btn btn-success m-1"><i className="bi bi-eye"></i></button>,
+                <button type="button" className="btn btn-danger m-1"  onClick={(e) => deleteHandler(row.id)}><i className="bi bi-trash"></i></button>
+            ]
+ 
+        },
        
-        alwaysShowAllBtns: true, // always show the next and previous page button
-        firstPageText: 'First', // the text of first page button
-        prePageText: 'Prev', // the text of previous page button
-        nextPageText: 'Next', // the text of next page button
-        lastPageText: 'Last', // the text of last page button
-       
-        onPageChange: (page, sizePerPage) => {
-            console.log('page',page);
-            console.log('sizePerPage',sizePerPage);
-        }, // callback function when page was changing
-        onSizePerPageChange: (sizePerPage, page) => {
-            console.log('page',page);
-            console.log('sizePerPage',sizePerPage);
-        }// callback function when page size was changing
-     
-      });
       
-   
-
+    ];
+  
 
     const fetchPost = async () => {
        
@@ -61,7 +48,8 @@ const Order = () => {
             .then((querySnapshot)=>{              
                 const newData = querySnapshot.docs
                     .map((doc,index) => ({...doc.data(), id:doc.id, no:index+1}));
-                    setItems(newData);                
+                    setItems(newData);        
+                    setFilterItems(newData);           
                 console.log(newData.length);
             })
        
@@ -70,6 +58,13 @@ const Order = () => {
     useEffect(()=>{
         fetchPost();
     }, [])
+    useEffect(()=>{
+        const result = items.filter(item =>{
+            return item.clientName?.toLowerCase().match(search?.toLowerCase());
+        });
+
+        setFilterItems(result);
+    }, [search])
 
     const deleteHandler = async (id) => {
          await OrderDataService.deleteOrder(id);
@@ -98,13 +93,18 @@ const Order = () => {
                 <div className="card">
                     <div >
 
-                        <BootstrapTable 
-                            bootstrap4 
-                            keyField='id' 
+                        <DataTable
+                            title="Order List"
+                            keyField='id'
                             columns={columns} 
-                            data={items}
-                            pagination={pagination}
-                            
+                            data={filteritems}
+                            pagination
+                            fixedHeader
+                            highlightOnHover
+                            subHeader
+                            subHeaderComponent={
+                                <input type="text" placeholder="search here" className="w-25 form-control" value={search} onChange={(e) => setSearch(e.target.value)}/>
+                            }
 
                         />
 
