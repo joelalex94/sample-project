@@ -233,7 +233,7 @@ const AddOrder = () => {
     return ( 
         <div>
            
-            <h2>{id !== undefined && id !== "" ? `Edit Order ${id}` : "Add Order"}</h2>
+            <h2>{id !== undefined && id !== "" ? `Edit Order  ${id}` : "Add Order"}</h2>
             <div className="container">
                 <div className="card">
                     <div className="card-header">
