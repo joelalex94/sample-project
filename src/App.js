@@ -8,23 +8,35 @@ import Order from './pages/Order';
 import AddOrder from './pages/Order/addOrder';
 import Employee from './pages/Employee';
 import ExtraHour from './pages/Extrahour';
+import Login from './pages/Auth/login';
+import Register from './pages/Auth/register';
+import ProtectedRoute from './pages/Auth/ProtectedRoute';
 
+import { UserAuthContextProvider  } from './context/UserAuthContext';
 
 function App() {
+
+ 
   return (  
+    
     <BrowserRouter>
-      <div className="App">
+      <div className="body">
         <Header/>
-        <Routes>
-          <Route exact path="/" Component={Home}/>
-          <Route exact path="/view/:id" Component={View}/>
-          <Route exact path="/order" Component={Order}/>
-          <Route exact path="/order/addorder" Component={AddOrder}/>
-          <Route exact path="/order/editorder/:id" Component={AddOrder}/>
-          <Route exact path="/employee" Component={Employee}/>
-          <Route exact path="/extra-hours" Component={ExtraHour}/>
-         
-        </Routes>
+        <UserAuthContextProvider>
+          <Routes>
+            <Route exact path="/login" Component={Login}/>
+            <Route exact path="/register" Component={Register}/>
+
+            <Route exact path="/" element={<ProtectedRoute><Home/></ProtectedRoute>}/>
+            <Route exact path="/view/:id" element={<ProtectedRoute><View/></ProtectedRoute>}/>
+            <Route exact path="/order" element={<ProtectedRoute><Order/></ProtectedRoute>}/>
+            <Route exact path="/order/addorder" element={<ProtectedRoute><AddOrder/></ProtectedRoute>}/>
+            <Route exact path="/order/editorder/:id" element={<ProtectedRoute><AddOrder/></ProtectedRoute>}/>
+            <Route exact path="/employee" element={<ProtectedRoute><Employee/></ProtectedRoute>}/>
+            <Route exact path="/extra-hours" element={<ProtectedRoute><ExtraHour/></ProtectedRoute>}/>
+          
+          </Routes>
+        </UserAuthContextProvider>
       </div>
     </BrowserRouter>
   );

@@ -16,6 +16,8 @@ const Order = () => {
 
     const [items, setItems] = useState([]); 
     const [search, setSearch] = useState(''); 
+    const [searchClientSource, setSearchClientSource] = useState(''); 
+    const [searchStatus, setSearchStatus] = useState(''); 
     const [filteritems, setFilterItems] = useState([]); 
 
     const columns = [
@@ -32,7 +34,6 @@ const Order = () => {
             name:"Action",
             cell: (row ) =>[ 
                 <Link to={`/order/editorder/${row.id}`}><button type="button" className="btn btn-secondary m-1"><i className="bi bi-pencil"></i></button></Link>,
-                <button type="button" className="btn btn-success m-1"><i className="bi bi-eye"></i></button>,
                 <button type="button" className="btn btn-danger m-1"  onClick={(e) => deleteHandler(row.id)}><i className="bi bi-trash"></i></button>
             ]
  
@@ -65,6 +66,33 @@ const Order = () => {
 
         setFilterItems(result);
     }, [search])
+    useEffect(()=>{
+        if(searchClientSource == "all"){
+            const result = items;
+            setFilterItems(result);
+        }else{
+            const result = items.filter(item =>{
+                return item.clientSource?.toLowerCase().match(searchClientSource?.toLowerCase());
+            
+            });
+            setFilterItems(result);
+        }
+        
+    }, [searchClientSource])
+    useEffect(()=>{
+        if(searchStatus == "all"){
+            const result = items;
+            setFilterItems(result);
+        }else{
+            const result = items.filter(item =>{
+                return item.status?.toLowerCase().match(searchStatus?.toLowerCase());
+            
+            });
+            setFilterItems(result);
+        }
+        
+    }, [searchStatus])
+    
 
     const deleteHandler = async (id) => {
          await OrderDataService.deleteOrder(id);
@@ -103,7 +131,22 @@ const Order = () => {
                             highlightOnHover
                             subHeader
                             subHeaderComponent={
-                                <input type="text" placeholder="search here" className="w-25 form-control" value={search} onChange={(e) => setSearch(e.target.value)}/>
+                                [<input type="text" placeholder="search here" className="w-25 form-control" value={search} onChange={(e) => setSearch(e.target.value)}/>,
+                                <select id="clientSource" className="form-select w-25 form-control" placeholder="clientSource" name="searchClientSource"value={searchClientSource } onChange={(e) => setSearchClientSource(e.target.value)} >
+                                    <option value="all"> All Client Source</option>
+                                    <option value="Google"> Google </option>
+                                    <option value="Website"> Website</option>
+                                    <option value="Marketing"> Marketing </option>
+                                    <option value="Client Recommendation"> Client Recommendation </option>
+                                </select>,
+                                
+                                <select id="searchStatus" className="form-select w-25 form-control" placeholder="searchStatus" name="searchStatus"value={searchStatus} onChange={(e) => setSearchStatus(e.target.value)} >
+                                    <option value="all"> All status </option>
+                                    <option value="pending"> Pending </option>
+                                    <option value="in-progress"> In Progress</option>
+                                    <option value="completed"> Completed </option>
+                                </select>
+                                ]
                             }
 
                         />
