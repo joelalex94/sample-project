@@ -5,19 +5,19 @@ import { useUserAuth } from '../../context/UserAuthContext';
 
 
 
-const Login = () => {
+const Reset = () => {
     const navigate = useNavigate();
  
     const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('');
-    const {logIn} = useUserAuth();
+    const {forgotPassword} = useUserAuth();
     const [error, setError] = useState("");
 
     const handleSubmit= async (e) => {
         e.preventDefault();
         setError("");
         try{
-            await logIn(email, password);
+            await forgotPassword(email);
+            alert("Password reset link sent!");
             navigate("/")
         }catch(err){
             setError(err.message);
@@ -43,22 +43,13 @@ const Login = () => {
                                         <label htmlFor="username" className="form-label">Username/Email</label>
                                         <input type="email" className="form-control" id="username" onChange={(e) => setEmail(e.target.value)}/>
                                     </div>
-                                    <div className="mb-4">
-                                        <label htmlFor="password" className="form-label">Password</label>
-                                        <input type="password" className="form-control" id="password" onChange={(e) => setPassword(e.target.value)}/>
-                                    </div>
-                                    <div className="row mb-4 text-right">
-                                        <div className="col-md-6 text-right">
-                                        Don't have an account? <Link to="/register"> Register  </Link>
-                                        </div>
-                                        <div className="col-md-6 text-right">
-                                            <Link  to="/reset">Forgot Password </Link>
-                                        </div>
-                                         
-                                    </div>
                                    
+                                    <div className="mb-4 text-right">
+                                    
+                                        Don't have an account? <Link to="/login"> Login </Link>
+                                    </div>
                                     <div className="d-grid">
-                                        <button type="submit" className="btn text-light main-bg">Login</button>
+                                        <button type="submit" className="btn text-light main-bg">send</button>
                                     </div>
                                 </form>
                             </div>
@@ -70,4 +61,4 @@ const Login = () => {
      );
 }
  
-export default Login;
+export default Reset;
