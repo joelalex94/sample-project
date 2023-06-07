@@ -237,7 +237,7 @@ const AddOrder = () => {
             <div className="container">
                 <div className="card">
                     <div className="card-header">
-                        Orders
+                        {id !== undefined && id !== "" ? `Edit Order  ${id}` : "Add Order"}
                     </div>
                     <div className="card-body d-md-flex justify-content-md-end">
                         <form className="row g-3" onSubmit={handleSubmit}>
@@ -254,9 +254,16 @@ const AddOrder = () => {
                                 <label htmlFor="clientName" className="form-label">Client Name</label>
                                 <input type="text" className="form-control" id="clientName" name="clientName"  value={clientName}  onChange={(e) => setClientName(e.target.value)}/>
                             </div>
+                           
                             <div className="col-md-6">
-                                <label htmlFor="clientSource" className="form-label">Client Source</label>
-                                <input type="text" className="form-control" id="clientSource" name="clientSource"  value={clientName}  onChange={(e) => setClientSource(e.target.value)}/>
+                                <label htmlFor="clientSource" className="form-label">Status</label>
+                                <select id="clientSource" className="form-select" placeholder="clientSource" name="clientSource"value={clientSource } onChange={(e) => setClientSource(e.target.value)} >
+                                <option> Client Source </option>
+                                <option value="Google"> Google </option>
+                                <option value="Website"> Website</option>
+                                <option value="Marketing"> Marketing </option>
+                                <option value="Client Recommendation"> Client Recommendation </option>
+                                </select>
                             </div>
                             <div className="col-12">
                                 <label htmlFor="address" className="form-label">Address</label>
