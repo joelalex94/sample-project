@@ -1,7 +1,8 @@
 import React,{useState, useEffect} from "react";
-import {useHistory, useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {db} from '../../firebase';
 import { collection, addDoc } from "firebase/firestore";
+import EmployeeDataService from '../../services/employeeservice';
 
 const AddEmployee = () => {
     const [employees, setEmployees] = useState([]);
@@ -9,23 +10,70 @@ const AddEmployee = () => {
     const [designation, setDesignation] = useState('');
     const [phone, setPhone] = useState('');
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();  
+    const [message, setMessage] =useState({error : false, msg : ""});
+    const {id} = useParams();
+
+    const history = useNavigate ();
+    const fetchEmployee = async (para) => {
        
         try {
-            const docRef = await addDoc(collection(db, "employees"), {
-              clientName:clientName,designation:designation,phone:phone
-            });
-            console.log("Document written with ID: ", docRef.id);
-          } catch (e) {
-            console.error("Error adding document: ", e);
-          }
+            const docSnap = await EmployeeDataService.getEmployee(id);
+            console.log(docSnap.data());
+            setClientName(docSnap.data().clientName);
+            setDesignation(docSnap.data().designation);
+            setPhone(docSnap.data().phone);
+           
+          } catch (error) {
+            console.error ('Error fetching item: ', error);
+        }
+       
+    }
+
+    useEffect(()=>{
+        if(id !== undefined && id !== ""){
+            fetchEmployee();
+        }
+        
+    }, [id])
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();  
+        setMessage("");
+
+        const newEmployee = {
+            clientName : clientName, 
+            designation: designation,
+            phone : phone, 
+            
+        }
+
+        try{
+
+            if(id !== undefined && id !== ""){
+                
+                await EmployeeDataService.updateEmployee(id, newEmployee);
+    
+                setMessage({error:false, msg:"New employee added successfully!"});
+                history('/employee');
+            }else{
+    
+                await EmployeeDataService.addEmployee(newEmployee);
+    
+                setMessage({error:false, msg:"New Employee added successfully!"});
+                history('/employee');
+            }
+            
+        }catch(err){
+            setMessage({error: true, msg : err.message});
+            console.log(err)
+        }
+        
     }
     
     return (
 
         <div>
-            <h2>Add Employee</h2>
+            <h2>{id !== undefined && id !== "" ? `Edit Employee  ${id}` : "Add Employee"}</h2>
             <div className="container">
                 
                 <form className="row g-3" onSubmit={handleSubmit} >

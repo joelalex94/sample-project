@@ -2,18 +2,41 @@ import { collection, getDocs } from "firebase/firestore";
 import {db} from '../../firebase';
 import { useState ,useEffect  } from 'react';
 import {Link} from "react-router-dom";
+import EmployeeDataService from '../../services/employeeservice';
+import DataTable from "react-data-table-component";
 
 const Employee = () => {
 
     const [employees, setEmployees] = useState([]); 
+    const [search, setSearch] = useState(''); 
+    const [filteremployees, setFilterEmployees] = useState([]); 
+
+    const columns = [
+        {name : "No", selector:(row) => row.no},
+        {name : "Employee Name", selector:(row) => row.clientName, sortable:true},
+        {name : "Designation", selector:(row) => row.designation, sortable:true},
+        {name : "Phone", selector:(row) => row.phone},
+        {   
+            name:"Action",
+            cell: (row ) =>[ 
+                <Link to={`/employee/editemployee/${row.id}`}><button type="button" className="btn btn-secondary m-1"><i className="bi bi-pencil"></i></button></Link>,
+                <button type="button" className="btn btn-success m-1"><i className="bi bi-eye"></i></button>,
+                <button type="button" className="btn btn-danger m-1"  onClick={(e) => deleteHandler(row.id)}><i className="bi bi-trash"></i></button>
+            ]
+ 
+        },
+       
+      
+    ];
 
     const fetchPost = async () => {
        
         await getDocs(collection(db, "employees"))
             .then((querySnapshot)=>{              
                 const newData = querySnapshot.docs
-                    .map((doc) => ({...doc.data(), id:doc.id }));
+                    .map((doc,index) => ({...doc.data(), id:doc.id, no:index+1}));
                     setEmployees(newData);                
+                    setFilterEmployees(newData);
                 console.log(newData.length);
             })
        
@@ -22,6 +45,18 @@ const Employee = () => {
     useEffect(()=>{
         fetchPost();
     }, [])
+    useEffect(()=>{
+        const result = employees.filter(employee =>{
+            return employee.clientName?.toLowerCase().match(search?.toLowerCase());
+        });
+
+        setFilterEmployees(result);
+    }, [search])
+
+    const deleteHandler = async (id) => {
+         await EmployeeDataService.deleteEmployee(id);
+         fetchPost();
+    }
 
     return ( 
         <>
@@ -42,8 +77,22 @@ const Employee = () => {
             </div>
             <div className="container">
                 <div className="card">
-                    <div className="card-body d-md-flex justify-content-md-end">
-                    <table className="table">
+                    <div >
+                    <DataTable
+                            title="Employee List"
+                            keyField='id'
+                            columns={columns} 
+                            data={filteremployees}
+                            pagination
+                            fixedHeader
+                            highlightOnHover
+                            subHeader
+                            subHeaderComponent={
+                                <input type="text" placeholder="search here" className="w-25 form-control" value={search} onChange={(e) => setSearch(e.target.value)}/>
+                            }
+
+                        />
+                    {/* <table className="table">
                         <thead>
                             <tr>
                             <th scope="col">#</th>
@@ -70,7 +119,7 @@ const Employee = () => {
                             </tr>
                         ))}
                         </tbody>
-                        </table>
+                        </table> */}
                     </div>
                 </div>
             </div>

@@ -2,18 +2,42 @@ import { collection, getDocs } from "firebase/firestore";
 import {db} from '../../firebase';
 import { useState ,useEffect  } from 'react';
 import {Link} from "react-router-dom";
+import ExtraHourDataService from '../../services/extrahourservice';
+import DataTable from "react-data-table-component";
+
 
 const ExtraHour = () => {
 
     const [extraHours, setExtraHours] = useState([]); 
+    const [search, setSearch] = useState(''); 
+    const [filterextrahours, setFilterExtraHours] = useState([]); 
+
+    const columns = [
+        {name : "No", selector:(row) => row.no},
+        {name : "Date", selector:(row) => row.orderDate, sortable:true},
+        {name : "Employee Name", selector:(row) => row.clientName, sortable:true},
+        {name : "Hours", selector:(row) => row.hours},
+        {   
+            name:"Action",
+            cell: (row ) =>[ 
+                <Link to={`/extra-hours/editextrahour/${row.id}`}><button type="button" className="btn btn-secondary m-1"><i className="bi bi-pencil"></i></button></Link>,
+                <button type="button" className="btn btn-success m-1"><i className="bi bi-eye"></i></button>,
+                <button type="button" className="btn btn-danger m-1"  onClick={(e) => deleteHandler(row.id)}><i className="bi bi-trash"></i></button>
+            ]
+ 
+        },
+       
+      
+    ];
 
     const fetchPost = async () => {
        
         await getDocs(collection(db, "extraHours"))
             .then((querySnapshot)=>{              
                 const newData = querySnapshot.docs
-                    .map((doc) => ({...doc.data(), id:doc.id }));
-                    setExtraHours(newData);                
+                .map((doc,index) => ({...doc.data(), id:doc.id, no:index+1}));
+                setExtraHours(newData);                
+                setFilterExtraHours(newData);                
                 console.log(newData.length);
             })
        
@@ -22,6 +46,18 @@ const ExtraHour = () => {
     useEffect(()=>{
         fetchPost();
     }, [])
+    useEffect(()=>{
+        const result = extraHours.filter(extrahour =>{
+            return extrahour.clientName?.toLowerCase().match(search?.toLowerCase());
+        });
+
+        setFilterExtraHours(result);
+    }, [search])
+
+    const deleteHandler = async (id) => {
+         await ExtraHourDataService.deleteExtraHour(id);
+         fetchPost();
+    }
 
     return ( 
         <>
@@ -42,8 +78,22 @@ const ExtraHour = () => {
             </div>
             <div className="container">
                 <div className="card">
-                    <div className="card-body d-md-flex justify-content-md-end">
-                    <table className="table">
+                    <div >
+                    <DataTable
+                            title="Extra Hours"
+                            keyField='id'
+                            columns={columns} 
+                            data={filterextrahours}
+                            pagination
+                            fixedHeader
+                            highlightOnHover
+                            subHeader
+                            subHeaderComponent={
+                                <input type="text" placeholder="search here" className="w-25 form-control" value={search} onChange={(e) => setSearch(e.target.value)}/>
+                            }
+
+                        />
+                    {/* <table className="table">
                         <thead>
                             <tr>
                             <th scope="col">#</th>
@@ -70,7 +120,7 @@ const ExtraHour = () => {
                             </tr>
                         ))}
                         </tbody>
-                        </table>
+                        </table> */}
                     </div>
                 </div>
             </div>

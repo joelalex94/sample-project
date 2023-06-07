@@ -28,6 +28,8 @@ function App() {
           <Route exact path="/extra-hours" Component={ExtraHour}/>
           <Route exact path="/employee/addemployee" Component={AddEmployee}/>
           <Route exact path="/extra-hours/addhour" Component={AddHour}/>
+          <Route exact path="/employee/editemployee/:id" Component={AddEmployee}/>
+          <Route exact path="/extra-hours/editextrahour/:id" Component={AddHour}/>
         </Routes>
       </div>
     </BrowserRouter>
