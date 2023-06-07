@@ -9,6 +9,7 @@ const Employee = () => {
 
     const [employees, setEmployees] = useState([]); 
     const [search, setSearch] = useState(''); 
+    const [searchDesignation, setSearchDesignation] = useState('');
     const [filteremployees, setFilterEmployees] = useState([]); 
 
     const columns = [
@@ -20,7 +21,6 @@ const Employee = () => {
             name:"Action",
             cell: (row ) =>[ 
                 <Link to={`/employee/editemployee/${row.id}`}><button type="button" className="btn btn-secondary m-1"><i className="bi bi-pencil"></i></button></Link>,
-                <button type="button" className="btn btn-success m-1"><i className="bi bi-eye"></i></button>,
                 <button type="button" className="btn btn-danger m-1"  onClick={(e) => deleteHandler(row.id)}><i className="bi bi-trash"></i></button>
             ]
  
@@ -52,6 +52,19 @@ const Employee = () => {
 
         setFilterEmployees(result);
     }, [search])
+    useEffect(()=>{
+        if(searchDesignation == "all"){
+            const result = employees;
+            setFilterEmployees(result);
+        }else{
+            const result = employees.filter(employee =>{
+                return employee.designation?.toLowerCase().match(searchDesignation?.toLowerCase());
+            
+            });
+            setFilterEmployees(result);
+        }
+        
+    }, [searchDesignation])
 
     const deleteHandler = async (id) => {
          await EmployeeDataService.deleteEmployee(id);
@@ -88,7 +101,15 @@ const Employee = () => {
                             highlightOnHover
                             subHeader
                             subHeaderComponent={
-                                <input type="text" placeholder="search here" className="w-25 form-control" value={search} onChange={(e) => setSearch(e.target.value)}/>
+                                [<input type="text" placeholder="search here" className="w-25 form-control" value={search} onChange={(e) => setSearch(e.target.value)}/>,
+                                <select id="designation" className="form-select w-25 form-control" placeholder="designation" name="searchDesignation"value={searchDesignation } onChange={(e) => setSearchDesignation(e.target.value)} >
+                                    <option value="all"> All</option>
+                                    <option value="Test1"> Test1 </option>
+                                    <option value="Test2"> Test2</option>
+                                    <option value="Test3"> Test3 </option>
+                                    
+                                </select>,
+                                ]
                             }
 
                         />
