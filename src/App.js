@@ -11,6 +11,7 @@ import Employee from './pages/Employee';
 import ExtraHour from './pages/Extrahour';
 import Login from './pages/Auth/login';
 import Register from './pages/Auth/register';
+import Reset from './pages/Auth/forgotpassword';
 import ProtectedRoute from './pages/Auth/ProtectedRoute';
 import AddEmployee from './pages/Employee/addEmployee';
 import AddHour from './pages/Extrahour/addHour';
@@ -28,6 +29,7 @@ function App() {
           <Routes>
             <Route exact path="/login" Component={Login}/>
             <Route exact path="/register" Component={Register}/>
+            <Route exact path="/reset" element={<Reset />} />
 
             <Route exact path="/" element={<ProtectedRoute><Home/></ProtectedRoute>}/>
             <Route exact path="/view/:id" element={<ProtectedRoute><View/></ProtectedRoute>}/>
