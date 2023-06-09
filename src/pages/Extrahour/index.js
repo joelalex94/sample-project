@@ -21,7 +21,6 @@ const ExtraHour = () => {
             name:"Action",
             cell: (row ) =>[ 
                 <Link to={`/extra-hours/editextrahour/${row.id}`}><button type="button" className="btn btn-secondary m-1"><i className="bi bi-pencil"></i></button></Link>,
-                <button type="button" className="btn btn-success m-1"><i className="bi bi-eye"></i></button>,
                 <button type="button" className="btn btn-danger m-1"  onClick={(e) => deleteHandler(row.id)}><i className="bi bi-trash"></i></button>
             ]
  
