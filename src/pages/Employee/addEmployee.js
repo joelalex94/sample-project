@@ -3,6 +3,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {db} from '../../firebase';
 import { collection, addDoc } from "firebase/firestore";
 import EmployeeDataService from '../../services/employeeservice';
+import { Col, Row } from 'antd';
 
 const AddEmployee = () => {
     const [employees, setEmployees] = useState([]);
@@ -73,36 +74,35 @@ const AddEmployee = () => {
     return (
 
         <div>
-            <h2>{id !== undefined && id !== "" ? `Edit Employee  ${id}` : "Add Employee"}</h2>
+            
             <div className="container">
-                
-                <form className="row g-3" onSubmit={handleSubmit} >
-                    
-                    <div className="col-md-6">
-                       
+            <h2>{id !== undefined && id !== "" ? `Edit Employee  ${id}` : "Add Employee"}</h2>
+                <form onSubmit={handleSubmit} >
+                    <Row gutter={[16, 16]}>
+                        <Col xs={12} sm={12} md={12} lg={12} xl={12}>
                         <input type="text" className="form-control" id="clientName" name="clientName" placeholder="Full Name" value={clientName} onChange={(e) => setClientName(e.target.value)} />
-                    </div>
-                    <div className="col-md-6">
+                        </Col>
                         
+                        <Col xs={12} sm={12} md={12} lg={12} xl={12}>
                         <select id="designation" className="form-select" placeholder="designation" name="designation" value={designation} onChange={(e) => setDesignation(e.target.value)} >
                         <option> Designation </option>
                         <option value="Test1"> Test1 </option>
                         <option value="Test2"> Test2 </option>
                         <option value="Test3"> Test3 </option>
                         </select>
-                    </div>
+                        </Col>
+                    </Row>
                     
-                    <div className="col-md-6">
-                        
+                    <Row gutter={[16, 16]} className="pt-4">
+                        <Col xs={12} sm={12} md={12} lg={12} xl={12}>
                         <input type="number" className="form-control" id="phone" name="phone" placeholder="Phone Number" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                        </Col>
                         
-                    </div>
-                    
-                    
-                    
-                    <div className="col-md-6">
+                        <Col xs={12} sm={12} md={12} lg={12} xl={12}>
                         <button type="submit" className="btn btn-primary">Save</button>
-                    </div>
+                        </Col>
+                    </Row>
+                
                 </form>
                     
             </div>

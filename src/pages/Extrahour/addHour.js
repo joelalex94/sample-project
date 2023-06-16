@@ -72,9 +72,9 @@ const AddHour = () => {
     return (
 
         <div>
-             <h2>{id !== undefined && id !== "" ? `Edit Extra HOur  ${id}` : "Add Extra Hours"}</h2>
+             
             <div className="container">
-                
+            <h2>{id !== undefined && id !== "" ? `Edit Extra HOur  ${id}` : "Add Extra Hours"}</h2>
                 <form className="row g-3" onSubmit={handleSubmit}>
 
                     <div className="col-md-6">
