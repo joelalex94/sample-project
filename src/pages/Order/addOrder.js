@@ -7,10 +7,16 @@ import { format, addDays } from 'date-fns';
 import OrderDataService from '../../services/orderservice';
 import { Alert } from "bootstrap";
 
+import Sidebars from '../../components/Sidebar';
 
+import { MenuUnfoldOutlined,MenuFoldOutlined,EditOutlined,DeleteOutlined } from '@ant-design/icons';
+import { Layout, Menu, theme ,Button ,Card, Table,Space, Input,Form,Row,Col} from 'antd';
+
+const { Header, Content, Footer, Sider } = Layout;
 
 
 const AddOrder = () => {
+    const [collapsed, setCollapsed] = useState(false);
     const [items, setItems] = useState([]);
     const [file, setFile] = useState(null);
     const [orderDate, setOrderDate] = useState('');
@@ -229,89 +235,113 @@ const AddOrder = () => {
         //     console.error("Error adding document: ", e);
         //   }
     }
+    const {
+        token: { colorBgContainer },
+      } = theme.useToken();
     
     return ( 
-        <div>
-           
-            <h2>{id !== undefined && id !== "" ? `Edit Order  ${id}` : "Add Order"}</h2>
-            <div className="container">
-                <div className="card">
-                    <div className="card-header">
-                        {id !== undefined && id !== "" ? `Edit Order  ${id}` : "Add Order"}
-                    </div>
-                    <div className="card-body d-md-flex justify-content-md-end">
-                        <form className="row g-3" onSubmit={handleSubmit}>
-                            <div className="col-md-6">
-                                <label htmlFor="orderDate" className="form-label">Order Date</label>
-                                <input type="date" className="form-control" id="orderDate" name="orderDate"  value={orderDate} min={orderDate}  onChange={handleDate}/>
-                                
-                            </div>
-                            <div className="col-md-6">
-                                <label htmlFor="deliveryDate" className="form-label">Delivery Date</label>
-                                <input type="date" className="form-control" id="deliveryDate" name="deliveryDate"  value={deliveryDate } min={deliveryDate}  max={deliveryDate} onChange={(e) => setDeliveryDate(e.target.value)}/>
-                            </div>
-                            <div className="col-md-6">
-                                <label htmlFor="clientName" className="form-label">Client Name</label>
-                                <input type="text" className="form-control" id="clientName" name="clientName"  value={clientName}  onChange={(e) => setClientName(e.target.value)}/>
-                            </div>
-                           
-                            <div className="col-md-6">
-                                <label htmlFor="clientSource" className="form-label">Status</label>
-                                <select id="clientSource" className="form-select" placeholder="clientSource" name="clientSource"value={clientSource } onChange={(e) => setClientSource(e.target.value)} >
-                                <option> Client Source </option>
-                                <option value="Google"> Google </option>
-                                <option value="Website"> Website</option>
-                                <option value="Marketing"> Marketing </option>
-                                <option value="Client Recommendation"> Client Recommendation </option>
-                                </select>
-                            </div>
-                            <div className="col-12">
-                                <label htmlFor="address" className="form-label">Address</label>
-                                <textarea type="text" className="form-control" id="address" placeholder="1234 Main St" name="address" value={address}  onChange={(e) => setAddress(e.target.value)}> 
-                                
-                                </textarea>
-                                
-                            </div>
-                            <div className="col-12">
-                                <label htmlFor="addressInfo" className="form-label">Address Info</label>
-                                <textarea type="text" className="form-control" id="addressInfo" placeholder="Apartment, studio, or floor" name="addressInfo" value={addressInfo}  onChange={(e) => setAddressInfo(e.target.value)}></textarea>
-                                
-                            </div>
-                            {/* <div className="col-md-6">
-                                <label htmlFor="inputCity" className="form-label">City</label>
-                                <input type="text" className="form-control" id="inputCity"/>
-                            </div> */}
-                            <div className="col-md-6">
-                                <label htmlFor="status" className="form-label">Status</label>
-                                <select id="status" className="form-select" placeholder="status" name="status"value={status } onChange={(e) => setStatus(e.target.value)} >
-                                <option> Status </option>
-                                <option value="pending"> Pending </option>
-                                <option value="in-progress"> In Progress</option>
-                                <option value="completed"> Completed </option>
-                                </select>
-                            </div>
-                            
-                            <div className="col-md-6">
-                                <label htmlFor="attachments" className="form-label">Attachments</label>
-                                <input type="file" className="form-control" id="attachments" name="attachments"  value={''} onChange={handleFileChange}/>
-                            </div>
-                            <div className="col-12">
-                                <label htmlFor="notes" className="form-label">Notes</label>
-                                <textarea type="text" className="form-control" id="notes" placeholder="1234 Main St" name="notes" value={notes } onChange={(e) => setNotes(e.target.value)}> 
-                                
-                                </textarea>
-                                
-                            </div>
-                            
-                            <div className="col-12">
-                                <button type="submit" className="btn btn-primary">Sign in</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+        <>
+            <Sidebars ValueCollapsed={collapsed}/>
+            <Layout style={{height: '100vh'}}>
+                <Header
+                    style={{
+                        padding: 0,
+                        background: colorBgContainer,
+                    }}
+                    >
+                    <Button
+                        type="text"
+                        icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                        onClick={() => setCollapsed(!collapsed)}
+                        style={{
+                        fontSize: '16px',
+                        width: 64,
+                        height: 64,
+                        }}
+                    />
+                </Header>
 
-        </div>
+            
+                <Content>
+                    <h2>{id !== undefined && id !== "" ? `Edit Order  ${id}` : "Add Order"}</h2>
+                    
+                            <div className="card-header">
+                                {id !== undefined && id !== "" ? `Edit Order  ${id}` : "Add Order"}
+                            </div>
+                            <div className="card-body d-md-flex justify-content-md-end">
+                                <form className="row g-3" onSubmit={handleSubmit}>
+                                    <div className="col-md-6">
+                                        <label htmlFor="orderDate" className="form-label">Order Date</label>
+                                        <input type="date" className="form-control" id="orderDate" name="orderDate"  value={orderDate} min={orderDate}  onChange={handleDate}/>
+                                        
+                                    </div>
+                                    <div className="col-md-6">
+                                        <label htmlFor="deliveryDate" className="form-label">Delivery Date</label>
+                                        <input type="date" className="form-control" id="deliveryDate" name="deliveryDate"  value={deliveryDate } min={deliveryDate}  max={deliveryDate} onChange={(e) => setDeliveryDate(e.target.value)}/>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <label htmlFor="clientName" className="form-label">Client Name</label>
+                                        <input type="text" className="form-control" id="clientName" name="clientName"  value={clientName}  onChange={(e) => setClientName(e.target.value)}/>
+                                    </div>
+                                
+                                    <div className="col-md-6">
+                                        <label htmlFor="clientSource" className="form-label">Status</label>
+                                        <select id="clientSource" className="form-select" placeholder="clientSource" name="clientSource"value={clientSource } onChange={(e) => setClientSource(e.target.value)} >
+                                        <option> Client Source </option>
+                                        <option value="Google"> Google </option>
+                                        <option value="Website"> Website</option>
+                                        <option value="Marketing"> Marketing </option>
+                                        <option value="Client Recommendation"> Client Recommendation </option>
+                                        </select>
+                                    </div>
+                                    <div className="col-12">
+                                        <label htmlFor="address" className="form-label">Address</label>
+                                        <textarea type="text" className="form-control" id="address" placeholder="1234 Main St" name="address" value={address}  onChange={(e) => setAddress(e.target.value)}> 
+                                        
+                                        </textarea>
+                                        
+                                    </div>
+                                    <div className="col-12">
+                                        <label htmlFor="addressInfo" className="form-label">Address Info</label>
+                                        <textarea type="text" className="form-control" id="addressInfo" placeholder="Apartment, studio, or floor" name="addressInfo" value={addressInfo}  onChange={(e) => setAddressInfo(e.target.value)}></textarea>
+                                        
+                                    </div>
+                                    {/* <div className="col-md-6">
+                                        <label htmlFor="inputCity" className="form-label">City</label>
+                                        <input type="text" className="form-control" id="inputCity"/>
+                                    </div> */}
+                                    <div className="col-md-6">
+                                        <label htmlFor="status" className="form-label">Status</label>
+                                        <select id="status" className="form-select" placeholder="status" name="status"value={status } onChange={(e) => setStatus(e.target.value)} >
+                                        <option> Status </option>
+                                        <option value="pending"> Pending </option>
+                                        <option value="in-progress"> In Progress</option>
+                                        <option value="completed"> Completed </option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div className="col-md-6">
+                                        <label htmlFor="attachments" className="form-label">Attachments</label>
+                                        <input type="file" className="form-control" id="attachments" name="attachments"  value={''} onChange={handleFileChange}/>
+                                    </div>
+                                    <div className="col-12">
+                                        <label htmlFor="notes" className="form-label">Notes</label>
+                                        <textarea type="text" className="form-control" id="notes" placeholder="1234 Main St" name="notes" value={notes } onChange={(e) => setNotes(e.target.value)}> 
+                                        
+                                        </textarea>
+                                        
+                                    </div>
+                                    
+                                    <div className="col-12">
+                                        <button type="submit" className="btn btn-primary">Sign in</button>
+                                    </div>
+                                </form>
+                            </div>
+                       
+                </Content>
+            </Layout>  
+
+        </>
      );
 }
  

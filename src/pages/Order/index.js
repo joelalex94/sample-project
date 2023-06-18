@@ -8,36 +8,70 @@ import OrderDataService from '../../services/orderservice';
 // import'react-bootstrap-table-next/dist/react-bootstrap-table2.css';
 // import paginationFactory from "react-bootstrap-table2-paginator";
 import DataTable from "react-data-table-component";
+import Sidebars from '../../components/Sidebar';
+
+import { MenuUnfoldOutlined,MenuFoldOutlined,EditOutlined,DeleteOutlined } from '@ant-design/icons';
+import { Layout, Menu, theme ,Button ,Card, Table,Space, Input,Form,Row,Col} from 'antd';
+
+const { Header, Content, Footer, Sider } = Layout;
+
 
 
 
 const Order = () => {
-
+    const [collapsed, setCollapsed] = useState(false);
 
     const [items, setItems] = useState([]); 
     const [search, setSearch] = useState(''); 
     const [searchClientSource, setSearchClientSource] = useState(''); 
     const [searchStatus, setSearchStatus] = useState(''); 
     const [filteritems, setFilterItems] = useState([]); 
+    const [sortedInfo,setSortedInfo] = useState({});
+    const [searchText, setSearchText] = useState("");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    
 
-    const columns = [
-        {name : "No", selector:(row) => row.no},
-        {name : "Order Date", selector:(row) => row.orderDate, sortable:true},
-        {name : "Delivery Date", selector:(row) => row.deliveryDate, sortable:true},
-        {name : "Client Name", selector:(row) => row.clientName, sortable:true},
-        {name : "Client Source", selector:(row) => row.clientSource, sortable:true},
-        {name : "Address", selector:(row) => row.address},
-        {name : "Address Info", selector:(row) => row.addressInfo},
-        {name : "Status", selector:(row) => row.status, sortable:true},
-        {name : "Notes", selector:(row) => row.notes},
-        {   
-            name:"Action",
-            cell: (row ) =>[ 
-                <Link to={`/order/editorder/${row.id}`}><button type="button" className="btn btn-secondary m-1"><i className="bi bi-pencil"></i></button></Link>,
-                <button type="button" className="btn btn-danger m-1"  onClick={(e) => deleteHandler(row.id)}><i className="bi bi-trash"></i></button>
-            ]
+    // const columns = [
+    //     {name : "No", selector:(row) => row.no},
+    //     {name : "Order Date", selector:(row) => row.orderDate, sortable:true},
+    //     {name : "Delivery Date", selector:(row) => row.deliveryDate, sortable:true},
+    //     {name : "Client Name", selector:(row) => row.clientName, sortable:true},
+    //     {name : "Client Source", selector:(row) => row.clientSource, sortable:true},
+    //     {name : "Address", selector:(row) => row.address},
+    //     {name : "Address Info", selector:(row) => row.addressInfo},
+    //     {name : "Status", selector:(row) => row.status, sortable:true},
+    //     {name : "Notes", selector:(row) => row.notes},
+    //     {   
+    //         name:"Action",
+    //         cell: (row ) =>[ 
+    //             <Link to={`/order/editorder/${row.id}`}><button type="button" className="btn btn-secondary m-1"><i className="bi bi-pencil"></i></button></Link>,
+    //             <button type="button" className="btn btn-danger m-1"  onClick={(e) => deleteHandler(row.id)}><i className="bi bi-trash"></i></button>
+    //         ]
  
-        },
+    //     },
+       
+      
+    // ];
+    const columns = [
+        {title : "No", dataIndex:"key",},
+        {title : "Order Date", dataIndex:"orderDate",align:"center",showOnResponse: true,showOnDesktop: true , sorter: (a,b) => a.orderDate.length - b.orderDate.length},
+        {title : "Delivery Date", dataIndex:"deliveryDate",align:"center",showOnResponse: true,showOnDesktop: true, sorter: (a,b) => a.deliveryDate.length - b.deliveryDate.length},
+        {title : "Client Name", dataIndex:"clientName",align:"center",showOnResponse: true,showOnDesktop: true, sorter: (a,b) => a.clientName.length - b.clientName.length},
+        {title : "Client Source", dataIndex:"clientSource",align:"center",showOnResponse: true,showOnDesktop: true, sorter: (a,b) => a.clientSource.length - b.clientSource.length},
+        {title : "Address", dataIndex:"address",align:"center",showOnResponse: true,showOnDesktop: true},
+        {title : "Address Info", dataIndex:"addressInfo",align:"center",showOnResponse: true,showOnDesktop: true},
+        {title : "Status", dataIndex:"status",align:"center",showOnResponse: true,showOnDesktop: true, sorter: (a,b) => a.status.length - b.status.length},
+        {title : "Notes", dataIndex:"notes",align:"center",showOnResponse: true,showOnDesktop: true},
+        {title : "Action", key:"action",align:"center", render: (action) => (<Space size="middle">  <Link to={`/order/editorder/${action.id}`}><button type="button" className="btn btn-secondary m-1"><EditOutlined /></button></Link> <button type="button" className="btn btn-danger m-1"  onClick={(e) => deleteHandler(action.id)}><DeleteOutlined /></button></Space>),},
+        // {   
+        //     name:"Action",
+        //     cell: (row ) =>[ 
+        //         <Link to={`/order/editorder/${row.id}`}><button type="button" className="btn btn-secondary m-1"><i className="bi bi-pencil"></i></button></Link>,
+        //         <button type="button" className="btn btn-danger m-1"  onClick={(e) => deleteHandler(row.id)}><i className="bi bi-trash"></i></button>
+        //     ]
+ 
+        // },
        
       
     ];
@@ -48,7 +82,7 @@ const Order = () => {
         await getDocs(collection(db, "items"))
             .then((querySnapshot)=>{              
                 const newData = querySnapshot.docs
-                    .map((doc,index) => ({...doc.data(), id:doc.id, no:index+1}));
+                    .map((doc,index) => ({...doc.data(), id:doc.id, key:index+1}));
                     setItems(newData);        
                     setFilterItems(newData);           
                 console.log(newData.length);
@@ -92,6 +126,16 @@ const Order = () => {
         }
         
     }, [searchStatus])
+
+    const filterData = async  () =>{
+       
+       
+            const response = await getDocs(collection(db, "items"))
+                .where('orderDate','>=',startDate).where('orderDate','<=',endDate).get()
+                setFilterItems();  
+            alert(response);
+        
+    }
     
 
     const deleteHandler = async (id) => {
@@ -99,107 +143,146 @@ const Order = () => {
          fetchPost();
     }
 
-
+    const {
+        token: { colorBgContainer },
+      } = theme.useToken();
+      
     return ( 
         <>
-            <div className="container">
-                <div className="card">
-                    <div className="card-header">
-                        Orders
-                    </div>
+       
+            <Sidebars ValueCollapsed={collapsed}/>
+            <Layout style={{height: '100vh'}}>
+            <Header
+                style={{
+                    padding: 0,
+                    background: colorBgContainer,
+                }}
+                >
+                <Button
+                    type="text"
+                    icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                    onClick={() => setCollapsed(!collapsed)}
+                    style={{
+                    fontSize: '16px',
+                    width: 64,
+                    height: 64,
+                    }}
+                />
+            </Header>
+            <Content>
+                {/* <Card Title="Orders">
+                <div className="container">
+                    <div className="card">
+                        
 
-                    <div className="card-body d-md-flex justify-content-md-end">
-                        {/* <h5 className="card-title">Special title treatment</h5>
-                        <p className="card-text">With supporting text below as a natural lead-in to additional content.</p> */}
-                        <Link to='/order/addorder'> 
-                            <label className="btn btn-primary ">Add Orders</label>
-                        </Link>
-                    </div>
-                </div>
-            </div>
-            <div className="container">
-                <div className="card">
-                    <div >
-
-                        <DataTable
-                            title="Order List"
-                            keyField='id'
-                            columns={columns} 
-                            data={filteritems}
-                            pagination
-                            fixedHeader
-                            highlightOnHover
-                            subHeader
-                            subHeaderComponent={
-                                [<input type="text" placeholder="search here" className="w-25 form-control" value={search} onChange={(e) => setSearch(e.target.value)}/>,
-                                <select id="clientSource" className="form-select w-25 form-control" placeholder="clientSource" name="searchClientSource"value={searchClientSource } onChange={(e) => setSearchClientSource(e.target.value)} >
-                                    <option value="all"> All Client Source</option>
-                                    <option value="Google"> Google </option>
-                                    <option value="Website"> Website</option>
-                                    <option value="Marketing"> Marketing </option>
-                                    <option value="Client Recommendation"> Client Recommendation </option>
-                                </select>,
-                                
-                                <select id="searchStatus" className="form-select w-25 form-control" placeholder="searchStatus" name="searchStatus"value={searchStatus} onChange={(e) => setSearchStatus(e.target.value)} >
-                                    <option value="all"> All status </option>
-                                    <option value="pending"> Pending </option>
-                                    <option value="in-progress"> In Progress</option>
-                                    <option value="completed"> Completed </option>
-                                </select>
-                                ]
-                            }
-
-                        />
-
-                    {/* <table className="table">
-                        <thead>
-                            <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Order Date</th>
-                            <th scope="col">Delivery Date</th>
-                            <th scope="col">Client Name</th>
-                            <th scope="col">Client Source</th>
-                            <th scope="col">Address</th>
-                            <th scope="col">Address Info</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Notes</th>
-                            <th scope="col">Actions</th>
-                            
-                            </tr>
-                        </thead>
-                        <tbody>
-                     
-                        {items.map((item,index) => (
-                            
-                            <tr key={item.id}>
-                                <th scope="row">{index+1}</th>
-                                <td>{item.orderDate}</td>
-                                <td>{item.deliveryDate}</td>
-                                <td>{item.clientName}</td>
-                                <td>{item.clientSource}</td>
-                                <td>{item.address}</td>
-                                <td>{item.addressInfo}</td>
-                                <td>{item.status}</td>
-                                <td>{item.notes}</td>
-                                <td>
-                                    <div className="d-flex ms-auto">
-                                        <Link to={`/order/editorder/${item.id}`}>
-                                            <button type="button" className="btn btn-secondary m-1"><i className="bi bi-pencil"></i></button>
-                                        </Link>
-                                        <button type="button" className="btn btn-success m-1"><i className="bi bi-eye"></i></button>
-                                        <button type="button" className="btn btn-danger m-1"  onClick={(e) => deleteHandler(item.id)}><i className="bi bi-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
+                        <div className="card-body d-md-flex justify-content-md-end">
                            
-                            
-                        </tbody>
-                        </table> */}
+                            <Link to='/order/addorder'> 
+                                <label className="btn btn-primary ">Add Orders</label>
+                            </Link>
+                        </div>
                     </div>
                 </div>
-            </div>
+                </Card> */}
+                
+                <Card title="Orders" extra={<Link to='/order/addorder'> <label className="btn btn-primary ">Add Orders</label></Link>}>
+                    
+                    
 
+                                {/* <DataTable
+                                    title="Order List"
+                                    keyField='id'
+                                    columns={columns} 
+                                    data={filteritems}
+                                    pagination
+                                    fixedHeader
+                                    highlightOnHover
+                                    subHeader
+                                    subHeaderComponent={
+                                        [<input type="text" placeholder="search here" className="w-25 form-control" value={search} onChange={(e) => setSearch(e.target.value)}/>,
+                                        <select id="clientSource" className="form-select w-25 form-control" placeholder="clientSource" name="searchClientSource"value={searchClientSource } onChange={(e) => setSearchClientSource(e.target.value)} >
+                                            <option value="all"> All Client Source</option>
+                                            <option value="Google"> Google </option>
+                                            <option value="Website"> Website</option>
+                                            <option value="Marketing"> Marketing </option>
+                                            <option value="Client Recommendation"> Client Recommendation </option>
+                                        </select>,
+                                        
+                                        <select id="searchStatus" className="form-select w-25 form-control" placeholder="searchStatus" name="searchStatus"value={searchStatus} onChange={(e) => setSearchStatus(e.target.value)} >
+                                            <option value="all"> All status </option>
+                                            <option value="pending"> Pending </option>
+                                            <option value="in-progress"> In Progress</option>
+                                            <option value="completed"> Completed </option>
+                                        </select>
+                                        ]
+                                    }
+
+                                /> */}
+                                <Space>
+                                    <Form className="ant-advanced-search-form" >
+                                        <Row gutter={24}>
+                                            <Col span={24} key={''} style={{ display:  'block' }}>
+                                                <Form.Item 
+                                                    label="Search Client Name"
+                                                    rules = {[{
+                                                        required: true,
+                                                        message: 'Input something!',
+                                                    }
+                                                    ]}
+                                                >
+                                                    <Input 
+                                                        placeholder="search client name"
+                                                        value={search} 
+                                                        onChange={(e) => setSearch(e.target.value)}
+                                                    />
+                                                </Form.Item>
+                                            </Col>
+                                        </Row>
+                                    </Form>
+                                    <Form className="ant-advanced-search-form" onFinish={filterData} >
+                                        <Row gutter={24}>
+                                        <Col span={8} key={''} style={{ display:  'block' }}>
+                                            <Form.Item 
+                                                label="Order Date From"
+                                                rules = {[{
+                                                    required: true,
+                                                    message: 'Input something!',
+                                                }
+                                                ]}
+                                            >
+                                                <Input placeholder="placeholder" value={startDate} onChange={(e) => setStartDate(e.target.value)} type="date"/>
+                                                
+                                                </Form.Item>
+                                                
+                                            </Col>
+                                            <Col span={8} key={''} style={{ display:  'block' }}>
+                                                <Form.Item 
+                                                    label="Order Date To"
+                                                    rules = {[{
+                                                        required: true,
+                                                        message: 'Input something!',
+                                                    }
+                                                    ]}
+                                                >
+                                                    <Input placeholder="placeholder" value={endDate} onChange={(e) => setEndDate(e.target.value)} type="date"/>
+                                                
+                                                </Form.Item>
+                                                
+                                            </Col>
+                                        
+                                        <Col span={8} style={{ textAlign: 'left' }}>
+                                            <Button type="primary" htmlType="submit">Search</Button>
+                                            
+                                        </Col>
+                                        </Row>
+                                    </Form>
+                                </Space>
+                                <Table columns={columns} dataSource={filteritems} pagination={{ pageSize: 50 }} bordered mobileBreakPoint={768}/>
+
+                </Card>
+            
+            </Content>
+            </Layout>
         </>
      );
 }

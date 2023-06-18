@@ -1,73 +1,97 @@
 import React, {useState} from 'react';
-import './login.css';
-import { useNavigate, Link } from 'react-router-dom';
+import { Form, Input, Button, Card , Row , Col, Layout} from 'antd';
 import { useUserAuth } from '../../context/UserAuthContext';
-
-
+import { useNavigate, Link } from 'react-router-dom';
+import './login.css';
+const { Header, Content, Footer } = Layout;
 
 const Login = () => {
     const navigate = useNavigate();
- 
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('');
+
     const {logIn} = useUserAuth();
-    const [error, setError] = useState("");
-
-    const handleSubmit= async (e) => {
-        e.preventDefault();
-        setError("");
-        try{
+    const onFinish = async (values) => {
+        // console.log('Received values of form: ', values);
+        try {
+        const { email, password } = values;
+        //   await db.auth().signInWithEmailAndPassword(email, password);
             await logIn(email, password);
-            navigate("/")
-        }catch(err){
-            setError(err.message);
+            navigate("/");
+            console.log(`Email : ${email}`, `password : ${password}`);
+        } catch (error) {
+            console.log('Login error:', error);
         }
-
+       
     };
 
-    
+  const onFinishFailed = (errorInfo) => {
+    console.log('Failed:', errorInfo);
+  };
 
-    return ( 
-        <>
-            <div className="container">
-                <div className="row justify-content-center mt-5">
-                    <div className="col-lg-4 col-md-6 col-sm-6">
-                        <div className="card shadow">
-                            <div className="card-title text-center border-bottom">
-                                <h2 className="p-3">Forgot password</h2>
-                                {error && <label className="form-label text-danger">{error}</label>}
-                            </div>
-                            <div className="card-body">
-                                <form onSubmit={handleSubmit}>
-                                    <div className="mb-4">
-                                        <label htmlFor="username" className="form-label">Username/Email</label>
-                                        <input type="email" className="form-control" id="username" onChange={(e) => setEmail(e.target.value)}/>
-                                    </div>
-                                    <div className="mb-4">
-                                        <label htmlFor="password" className="form-label">Password</label>
-                                        <input type="password" className="form-control" id="password" onChange={(e) => setPassword(e.target.value)}/>
-                                    </div>
-                                    <div className="row mb-4 text-right">
-                                        <div className="col-md-6 text-right">
-                                        Don't have an account? <Link to="/register"> Register  </Link>
-                                        </div>
-                                        <div className="col-md-6 text-right">
-                                            <Link  to="/reset">Forgot Password </Link>
-                                        </div>
-                                         
-                                    </div>
-                                   
-                                    <div className="d-grid">
-                                        <button type="submit" className="btn text-light main-bg">Login</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </>
-     );
-}
- 
+  return (
+    <Layout>
+         <Content className="site-layout" style={{ padding: '0 50px' }}>
+    <div className="login-container">
+        <Card title="Login">
+            <Form
+            name="loginForm"
+            initialValues={{
+                remember: true,
+            }}
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+            >
+            <Form.Item
+                label="Email"
+                name="email"
+                rules={[
+                {
+                    required: true,
+                    message: 'Please enter your email!',
+                },
+                {
+                    type: 'email',
+                    message: 'Please enter a valid email address!',
+                },
+                ]}
+            >
+                <Input />
+            </Form.Item>
+
+            <Form.Item
+                label="Password"
+                name="password"
+                rules={[
+                {
+                    required: true,
+                    message: 'Please enter your password!',
+                },
+                ]}
+            >
+                <Input.Password  />
+            </Form.Item>
+
+            <Form.Item>
+                <Button type="primary" htmlType="submit" className="login-form-button">
+                Log In
+                </Button>
+            </Form.Item>
+            </Form>
+            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                <Col className="gutter-row" span={12}>
+                    <div >Don't have an account? <Link to="/register"> Register  </Link></div>
+                </Col>
+                <Col className="gutter-row" span={12}>
+                    <div><Link  to="/reset">Forgot Password </Link></div>
+                </Col>
+           
+            </Row>
+            
+        </Card>
+        
+    </div>
+    </Content>
+    </Layout>
+  );
+};
+
 export default Login;
