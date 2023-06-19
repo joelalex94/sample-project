@@ -245,7 +245,7 @@ const Order = () => {
                                         </Row>
                                     </Form>
                                     <Form className="ant-advanced-search-form" onFinish={filterData} >
-                                        <Row gutter={32}>
+                                        <Row gutter={24}>
                                         <Col span={8} key={''} style={{ display:  'block' }}>
                                             <Form.Item 
                                                 label="Order Date From"
@@ -277,14 +277,14 @@ const Order = () => {
                                                 
                                             </Col>
                                         
-                                        <Col span={4}style={{ display:  'block' }} >
+                                        <Col span={8}style={{ display:  'block' }} >
                                             <Button type="primary" htmlType="submit">Search</Button>
                                             
                                         </Col>
                                         </Row>
                                     </Form>
                                 </Space>
-                                <Table columns={columns} dataSource={filteritems} pagination={{ pageSize: 50 }} bordered scroll={{ y: "50vh" }} size="small"/>
+                                <Table columns={columns} dataSource={filteritems} pagination={{ pageSize: 50 }} bordered scroll={{ x: "50vh" }} size="small"/>
 
                 </Card>
             
