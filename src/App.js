@@ -33,7 +33,7 @@ const App = () => {
   } = theme.useToken();
   return (  
     <BrowserRouter>
-      <Layout >
+      <Layout style={{height:"100%"}}>
         {/* <Header/> */}
         <UserAuthContextProvider>
           <Routes>

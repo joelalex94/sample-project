@@ -40,7 +40,7 @@ const AddOrder = () => {
        
         try {
             const docSnap = await OrderDataService.getOrder(id);
-            console.log(docSnap.data());
+            setItems(docSnap.data());
             setOrderDate(docSnap.data().orderDate);
             setDeliveryDate(docSnap.data().deliveryDate);
             setClientSource(docSnap.data().clientSource);
@@ -267,7 +267,7 @@ const AddOrder = () => {
 
             
                 <Content>
-                            <h2>{id !== undefined && id !== "" ? `Edit Order  ${id}` : "Add Order"}</h2>
+                            {/* <h2>{id !== undefined && id !== "" ? `Edit Order  ${id}` : "Add Order"}</h2> */}
                     
                             {/* <div className="card-header">
                                 {id !== undefined && id !== "" ? `Edit Order  ${id}` : "Add Order"}
@@ -341,13 +341,14 @@ const AddOrder = () => {
                                     </div>
                                 </form>
                             </div> */} 
-                        <Card title="Add Order">
+                        <Card title={id !== undefined && id !== "" ? `Edit Order  ${id}` : "Add Order"}>
                             <Form className="ant-advanced-search-form" onFinish={handleSubmit} >
                                 <Row gutter={24}>
                                     <Col span={12} key={''} style={{ display:  'block' }}>
                                         <Form.Item 
                                             label="Order Date"
                                             name="orderDate"
+                                            value
                                             rules = {[{
                                                 required: true,
                                                 message: 'Input something!',
@@ -388,7 +389,7 @@ const AddOrder = () => {
                                             }
                                             ]}
                                         >
-                                            <Input placeholder="placeholder" value={clientName}   onChange={(e) => setClientName(e.target.value)} type="text"/>
+                                            <Input placeholder={items !== undefined && items !== "" ? `${items.clientName}` : "Please enter a Client Name"} value={clientName}  onChange={(e) => setClientName(e.target.value)} type="text"/>
                                         
                                         </Form.Item>
                                         

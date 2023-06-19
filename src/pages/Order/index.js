@@ -1,4 +1,4 @@
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs , query, refEqual, where} from "firebase/firestore";
 import {db} from '../../firebase';
 import { useState ,useEffect  } from 'react';
 import "./index.css";
@@ -127,12 +127,17 @@ const Order = () => {
         
     }, [searchStatus])
 
-    const filterData = async  () =>{
+    const filterData = async () =>{
        
        
-            const response = await getDocs(collection(db, "items"))
-                .where('orderDate','>=',startDate).where('orderDate','<=',endDate).get()
-                setFilterItems();  
+            const q = query(collection(db, "items"),where('orderDate','>=',startDate));
+            const querySnapshot = await getDocs(q);
+            const response = querySnapshot.docs
+                .map((doc,index) => ({...doc.data(), id:doc.id, key:index+1}));       
+                setFilterItems(response);           
+                console.log(response);
+                
+               
             alert(response);
         
     }
@@ -240,10 +245,11 @@ const Order = () => {
                                         </Row>
                                     </Form>
                                     <Form className="ant-advanced-search-form" onFinish={filterData} >
-                                        <Row gutter={24}>
+                                        <Row gutter={32}>
                                         <Col span={8} key={''} style={{ display:  'block' }}>
                                             <Form.Item 
                                                 label="Order Date From"
+                                                name={startDate}
                                                 rules = {[{
                                                     required: true,
                                                     message: 'Input something!',
@@ -258,6 +264,7 @@ const Order = () => {
                                             <Col span={8} key={''} style={{ display:  'block' }}>
                                                 <Form.Item 
                                                     label="Order Date To"
+                                                    name={endDate}
                                                     rules = {[{
                                                         required: true,
                                                         message: 'Input something!',
@@ -270,14 +277,14 @@ const Order = () => {
                                                 
                                             </Col>
                                         
-                                        <Col span={8} style={{ textAlign: 'left' }}>
+                                        <Col span={4}style={{ display:  'block' }} >
                                             <Button type="primary" htmlType="submit">Search</Button>
                                             
                                         </Col>
                                         </Row>
                                     </Form>
                                 </Space>
-                                <Table columns={columns} dataSource={filteritems} pagination={{ pageSize: 50 }} bordered mobileBreakPoint={768}/>
+                                <Table columns={columns} dataSource={filteritems} pagination={{ pageSize: 50 }} bordered mobileBreakPoint={768} scroll={{ y: "50vh" }} size="small"/>
 
                 </Card>
             
