@@ -355,7 +355,7 @@ const AddOrder = () => {
                                             }
                                             ]}
                                         >
-                                            <Input placeholder="placeholder" value={orderDate} min={orderDate}  onChange={handleDate} type="date"/>
+                                            <Input placeholder="placeholder" value={orderDate} min={orderDate}  onChange={handleDate} type="date"  />
                                         
                                         </Form.Item>
                                         
@@ -370,7 +370,7 @@ const AddOrder = () => {
                                             }
                                             ]}
                                         >
-                                            <Input placeholder="placeholder" value={deliveryDate } min={deliveryDate}  max={deliveryDate} onChange={(e) => setDeliveryDate(e.target.value)} type="date"/>
+                                            <Input placeholder={items !== undefined && items !== "" ? `${items.deliveryDate}` : "Please enter a delivery date"} value={deliveryDate } min={deliveryDate}  max={deliveryDate} onChange={(e) => setDeliveryDate(e.target.value)} type="date"/>
                                         
                                         </Form.Item>
                                         
@@ -401,7 +401,7 @@ const AddOrder = () => {
                                             hasFeedback
                                             rules={[{ required: true, message: 'Please select Client Source!' }]}
                                             >
-                                            <Select placeholder="Please select a Client Source" >
+                                            <Select placeholder={items !== undefined && items !== "" ? `${items.clientSource}` : "Please enter a Client Source"} >
                                                 <Option value="Google"> Google </Option>
                                                 <Option value="Website"> Website</Option>
                                                 <Option value="Marketing"> Marketing </Option>
@@ -426,7 +426,7 @@ const AddOrder = () => {
                                         >
                                            
                                           
-                                            <TextArea value={address} onChange={(e) => setAddress(e.target.value)} rows={4}/>
+                                            <TextArea placeholder={items !== undefined && items !== "" ? `${items.address}` : "Please enter a address"} value={address} onChange={(e) => setAddress(e.target.value)} rows={4}/>
                                         </Form.Item>
                                         
                                     </Col>
@@ -444,7 +444,7 @@ const AddOrder = () => {
                                         >
                                            
                                           
-                                            <TextArea value={addressInfo} onChange={(e) => setAddressInfo(e.target.value)} rows={4}/>
+                                            <TextArea placeholder={items !== undefined && items !== "" ? `${items.addressInfo}` : "Please enter a address"}  value={addressInfo} onChange={(e) => setAddressInfo(e.target.value)} rows={4}/>
                                         </Form.Item>
                                         
                                     </Col>
@@ -459,7 +459,7 @@ const AddOrder = () => {
                                             hasFeedback
                                             rules={[{ required: true, message: 'Please select status!' }]}
                                             >
-                                            <Select placeholder="Please select a status" value={status} >
+                                            <Select placeholder={items !== undefined && items !== "" ? `${items.status}` : "Please select a status"}  value={status} >
                                                 <Option value="pending"> Pending </Option>
                                                 <Option value="in-progress"> In Progress</Option>
                                                 <Option value="completed"> Completed </Option>
@@ -477,7 +477,7 @@ const AddOrder = () => {
                                             }
                                             ]}
                                         >
-                                            <Input placeholder="placeholder" value={''} onChange={handleFileChange} type="file"/>
+                                            <Input placeholder={items !== undefined && items !== "" ? `${items.fileurl}` : "Please select file"}  value={''} onChange={handleFileChange} type="file"/>
                                             {/* <input type="file" className="form-control" id="attachments" name="attachments"  value={''} onChange={handleFileChange}/> */}
                                         </Form.Item>
                                         
@@ -498,7 +498,7 @@ const AddOrder = () => {
                                         >
                                            
                                           
-                                            <TextArea value={notes} onChange={(e) => setNotes(e.target.value)} rows={4}/>
+                                            <TextArea placeholder={items !== undefined && items !== "" ? `${items.notes}` : "Please enter a address"}  value={notes} onChange={(e) => setNotes(e.target.value)} rows={4}/>
                                         </Form.Item>
                                         
                                     </Col>

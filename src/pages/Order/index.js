@@ -55,7 +55,7 @@ const Order = () => {
     // ];
     const columns = [
         {title : "No", dataIndex:"key",},
-        {title : "Order Date", dataIndex:"orderDate",align:"center",showOnResponse: true,showOnDesktop: true , sorter: (a,b) => a.orderDate.length - b.orderDate.length},
+        {title : "Order Date", dataIndex:"orderDate",align:"center",showOnResponse: true,showOnDesktop: true , sorter: (a,b) => a.orderDate.length - b.orderDate.length, scroll},
         {title : "Delivery Date", dataIndex:"deliveryDate",align:"center",showOnResponse: true,showOnDesktop: true, sorter: (a,b) => a.deliveryDate.length - b.deliveryDate.length},
         {title : "Client Name", dataIndex:"clientName",align:"center",showOnResponse: true,showOnDesktop: true, sorter: (a,b) => a.clientName.length - b.clientName.length},
         {title : "Client Source", dataIndex:"clientSource",align:"center",showOnResponse: true,showOnDesktop: true, sorter: (a,b) => a.clientSource.length - b.clientSource.length},
@@ -284,7 +284,7 @@ const Order = () => {
                                         </Row>
                                     </Form>
                                 </Space>
-                                <Table columns={columns} dataSource={filteritems} pagination={{ pageSize: 50 }} bordered mobileBreakPoint={768} scroll={{ y: "50vh" }} size="small"/>
+                                <Table columns={columns} dataSource={filteritems} pagination={{ pageSize: 50 }} bordered scroll={{ y: "50vh" }} size="small"/>
 
                 </Card>
             
