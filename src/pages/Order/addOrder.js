@@ -10,10 +10,11 @@ import { Alert } from "bootstrap";
 import Sidebars from '../../components/Sidebar';
 
 import { MenuUnfoldOutlined,MenuFoldOutlined,EditOutlined,DeleteOutlined } from '@ant-design/icons';
-import { Layout, Menu, theme ,Button ,Card, Table,Space, Input,Form,Row,Col} from 'antd';
+import { Layout, Menu, theme ,Button ,Card, Table,Space, Input,Form,Row,Col,Select,Upload} from 'antd';
 
 const { Header, Content, Footer, Sider } = Layout;
-
+const { Option } = Select;
+const { TextArea } = Input;
 
 const AddOrder = () => {
     const [collapsed, setCollapsed] = useState(false);
@@ -100,22 +101,25 @@ const AddOrder = () => {
     }
 
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();  
+    const handleSubmit = async (values) => {
+        // e.preventDefault();  
+        values.file = fileUrl;
+        console.log(values);
         setMessage("");
 
-        const newOrder = {
-            file : fileUrl, 
-            orderDate : orderDate, 
-            deliveryDate : deliveryDate, 
-            clientName : clientName, 
-            clientSource: clientSource,
-            address : address, 
-            addressInfo : addressInfo,
-            status : status,
-            notes :notes
-        }
-
+        // const newOrder = {
+        //     file : fileUrl, 
+        //     orderDate : orderDate, 
+        //     deliveryDate : deliveryDate, 
+        //     clientName : clientName, 
+        //     clientSource: clientSource,
+        //     address : address, 
+        //     addressInfo : addressInfo,
+        //     status : status,
+        //     notes :notes
+        // }
+        // console.log(newOrder);
+        const newOrder = values
         
 
         try{
@@ -263,9 +267,9 @@ const AddOrder = () => {
 
             
                 <Content>
-                    <h2>{id !== undefined && id !== "" ? `Edit Order  ${id}` : "Add Order"}</h2>
+                            <h2>{id !== undefined && id !== "" ? `Edit Order  ${id}` : "Add Order"}</h2>
                     
-                            <div className="card-header">
+                            {/* <div className="card-header">
                                 {id !== undefined && id !== "" ? `Edit Order  ${id}` : "Add Order"}
                             </div>
                             <div className="card-body d-md-flex justify-content-md-end">
@@ -310,7 +314,7 @@ const AddOrder = () => {
                                         <label htmlFor="inputCity" className="form-label">City</label>
                                         <input type="text" className="form-control" id="inputCity"/>
                                     </div> */}
-                                    <div className="col-md-6">
+                                    {/* <div className="col-md-6">
                                         <label htmlFor="status" className="form-label">Status</label>
                                         <select id="status" className="form-select" placeholder="status" name="status"value={status } onChange={(e) => setStatus(e.target.value)} >
                                         <option> Status </option>
@@ -336,8 +340,178 @@ const AddOrder = () => {
                                         <button type="submit" className="btn btn-primary">Sign in</button>
                                     </div>
                                 </form>
-                            </div>
-                       
+                            </div> */} 
+                        <Card title="Add Order">
+                            <Form className="ant-advanced-search-form" onFinish={handleSubmit} >
+                                <Row gutter={24}>
+                                    <Col span={12} key={''} style={{ display:  'block' }}>
+                                        <Form.Item 
+                                            label="Order Date"
+                                            name="orderDate"
+                                            rules = {[{
+                                                required: true,
+                                                message: 'Input something!',
+                                            }
+                                            ]}
+                                        >
+                                            <Input placeholder="placeholder" value={orderDate} min={orderDate}  onChange={handleDate} type="date"/>
+                                        
+                                        </Form.Item>
+                                        
+                                    </Col>
+                                    <Col span={12} key={''} style={{ display:  'block' }}>
+                                        <Form.Item 
+                                            label="Delivery Date"
+                                            name="deliveryDate"
+                                            rules = {[{
+                                                required: true,
+                                                message: 'Input something!',
+                                            }
+                                            ]}
+                                        >
+                                            <Input placeholder="placeholder" value={deliveryDate } min={deliveryDate}  max={deliveryDate} onChange={(e) => setDeliveryDate(e.target.value)} type="date"/>
+                                        
+                                        </Form.Item>
+                                        
+                                    </Col>
+                                
+                                
+                                </Row>
+                                <Row gutter={24}>
+                                    <Col span={12} key={''} style={{ display:  'block' }}>
+                                        <Form.Item 
+                                            label="Client Name"
+                                            name="clientName"
+                                            rules = {[{
+                                                required: true,
+                                                message: 'Input something!',
+                                            }
+                                            ]}
+                                        >
+                                            <Input placeholder="placeholder" value={clientName}   onChange={(e) => setClientName(e.target.value)} type="text"/>
+                                        
+                                        </Form.Item>
+                                        
+                                    </Col>
+                                    <Col span={12} key={''} style={{ display:  'block' }}>
+                                        <Form.Item
+                                            name="clientSource"
+                                            label="Client Source"
+                                            hasFeedback
+                                            rules={[{ required: true, message: 'Please select Client Source!' }]}
+                                            >
+                                            <Select placeholder="Please select a Client Source" >
+                                                <Option value="Google"> Google </Option>
+                                                <Option value="Website"> Website</Option>
+                                                <Option value="Marketing"> Marketing </Option>
+                                                <Option value="Client Recommendation"> Client Recommendation </Option>
+                                            </Select>
+                                        </Form.Item>
+                                        
+                                    </Col>
+                                
+                                    
+                                </Row>
+                                <Row gutter={24}>
+                                    <Col span={24} key={''} style={{ display:  'block' }}>
+                                        <Form.Item 
+                                            label="Address"
+                                            name="address"
+                                            rules = {[{
+                                                required: true,
+                                                message: 'Input something!',
+                                            }
+                                            ]}
+                                        >
+                                           
+                                          
+                                            <TextArea value={address} onChange={(e) => setAddress(e.target.value)} rows={4}/>
+                                        </Form.Item>
+                                        
+                                    </Col>
+                                </Row>
+                                <Row gutter={24}>
+                                    <Col span={24} key={''} style={{ display:  'block' }}>
+                                        <Form.Item 
+                                            label="Address Info"
+                                            name="addressInfo"
+                                            rules = {[{
+                                                required: true,
+                                                message: 'Input something!',
+                                            }
+                                            ]}
+                                        >
+                                           
+                                          
+                                            <TextArea value={addressInfo} onChange={(e) => setAddressInfo(e.target.value)} rows={4}/>
+                                        </Form.Item>
+                                        
+                                    </Col>
+                                
+                                    
+                                </Row>
+                                <Row gutter={24}>
+                                    <Col span={12} key={''} style={{ display:  'block' }}>
+                                        <Form.Item
+                                            name="status"
+                                            label="Status"
+                                            hasFeedback
+                                            rules={[{ required: true, message: 'Please select status!' }]}
+                                            >
+                                            <Select placeholder="Please select a status" value={status} >
+                                                <Option value="pending"> Pending </Option>
+                                                <Option value="in-progress"> In Progress</Option>
+                                                <Option value="completed"> Completed </Option>
+                                            </Select>
+                                        </Form.Item>
+                                        
+                                    </Col>
+                                    <Col span={12} key={''} style={{ display:  'block' }}>
+                                        <Form.Item 
+                                            label="Attachments"
+                                            
+                                            rules = {[{
+                                                required: true,
+                                                message: 'Input something!',
+                                            }
+                                            ]}
+                                        >
+                                            <Input placeholder="placeholder" value={''} onChange={handleFileChange} type="file"/>
+                                            {/* <input type="file" className="form-control" id="attachments" name="attachments"  value={''} onChange={handleFileChange}/> */}
+                                        </Form.Item>
+                                        
+                                    </Col>
+                                
+                                
+                                </Row>
+                                <Row gutter={24}>
+                                    <Col span={24} key={''} style={{ display:  'block' }}>
+                                        <Form.Item 
+                                            label="Notes"
+                                            name="notes"
+                                            rules = {[{
+                                                required: true,
+                                                message: 'Input something!',
+                                            }
+                                            ]}
+                                        >
+                                           
+                                          
+                                            <TextArea value={notes} onChange={(e) => setNotes(e.target.value)} rows={4}/>
+                                        </Form.Item>
+                                        
+                                    </Col>
+                                
+                                    
+                                </Row>
+                                <Row gutter={24}>
+                                    <Col span={8} style={{ textAlign: 'left' }}>
+                                        <Button type="primary" htmlType="submit">Submit</Button>
+                                        
+                                    </Col>
+                                </Row>
+                            </Form>
+                        </Card>
                 </Content>
             </Layout>  
 
