@@ -3,9 +3,16 @@ import {useNavigate, useParams} from "react-router-dom";
 import {db} from '../../firebase';
 import { collection, addDoc } from "firebase/firestore";
 import EmployeeDataService from '../../services/employeeservice';
-import { Col, Row } from 'antd';
+
+import Sidebars from '../../components/Sidebar';
+
+import { MenuUnfoldOutlined,MenuFoldOutlined,EditOutlined,DeleteOutlined } from '@ant-design/icons';
+import { Layout, Menu, theme ,Button ,Card, Table,Space, Input,Form,Row,Col} from 'antd';
+
+const { Header, Content, Footer, Sider } = Layout;
 
 const AddEmployee = () => {
+    const [collapsed, setCollapsed] = useState(false);
     const [employees, setEmployees] = useState([]);
     const [clientName, setClientName] = useState('');
     const [designation, setDesignation] = useState('');
@@ -70,44 +77,67 @@ const AddEmployee = () => {
         }
         
     }
+    const {
+        token: { colorBgContainer },
+      } = theme.useToken();
     
     return (
+    <>
+        <Sidebars ValueCollapsed={collapsed}/>
+            <Layout style={{height: '100vh'}}>
+                <Header
+                    style={{
+                        padding: 0,
+                        background: colorBgContainer,
+                    }}
+                    >
+                    <Button
+                        type="text"
+                        icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                        onClick={() => setCollapsed(!collapsed)}
+                        style={{
+                        fontSize: '16px',
+                        width: 64,
+                        height: 64,
+                        }}
+                    />
+                </Header>
 
-        <div>
             
-            <div className="container">
-            <h2>{id !== undefined && id !== "" ? `Edit Employee  ${id}` : "Add Employee"}</h2>
-                <form onSubmit={handleSubmit} >
-                    <Row gutter={[16, 16]}>
-                        <Col xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <input type="text" className="form-control" id="clientName" name="clientName" placeholder="Full Name" value={clientName} onChange={(e) => setClientName(e.target.value)} />
-                        </Col>
+                <Content>
+                <h2>{id !== undefined && id !== "" ? `Edit Employee  ${id}` : "Add Employee"}</h2>
+                    <form onSubmit={handleSubmit} >
+                        <Row gutter={[16, 16]}>
+                            <Col xs={12} sm={12} md={12} lg={12} xl={12}>
+                            <input type="text" className="form-control" id="clientName" name="clientName" placeholder="Full Name" value={clientName} onChange={(e) => setClientName(e.target.value)} />
+                            </Col>
+                            
+                            <Col xs={12} sm={12} md={12} lg={12} xl={12}>
+                            <select id="designation" className="form-select" placeholder="designation" name="designation" value={designation} onChange={(e) => setDesignation(e.target.value)} >
+                            <option> Designation </option>
+                            <option value="Test1"> Test1 </option>
+                            <option value="Test2"> Test2 </option>
+                            <option value="Test3"> Test3 </option>
+                            </select>
+                            </Col>
+                        </Row>
                         
-                        <Col xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <select id="designation" className="form-select" placeholder="designation" name="designation" value={designation} onChange={(e) => setDesignation(e.target.value)} >
-                        <option> Designation </option>
-                        <option value="Test1"> Test1 </option>
-                        <option value="Test2"> Test2 </option>
-                        <option value="Test3"> Test3 </option>
-                        </select>
-                        </Col>
-                    </Row>
+                        <Row gutter={[16, 16]} className="pt-4">
+                            <Col xs={12} sm={12} md={12} lg={12} xl={12}>
+                            <input type="number" className="form-control" id="phone" name="phone" placeholder="Phone Number" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                            </Col>
+                            
+                            <Col xs={12} sm={12} md={12} lg={12} xl={12}>
+                            <button type="submit" className="btn btn-primary">Save</button>
+                            </Col>
+                        </Row>
                     
-                    <Row gutter={[16, 16]} className="pt-4">
-                        <Col xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <input type="number" className="form-control" id="phone" name="phone" placeholder="Phone Number" value={phone} onChange={(e) => setPhone(e.target.value)} />
-                        </Col>
+                    </form>
                         
-                        <Col xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <button type="submit" className="btn btn-primary">Save</button>
-                        </Col>
-                    </Row>
-                
-                </form>
-                    
-            </div>
+                    </Content>
+            </Layout> 
 
-        </div>
+</>
     );
 }
 

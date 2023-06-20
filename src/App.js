@@ -48,7 +48,10 @@ const App = () => {
             <Route exact path="/order/editorder/:id" element={<ProtectedRoute><AddOrder/></ProtectedRoute>}/>
             <Route exact path="/employee" element={<ProtectedRoute><Employee/></ProtectedRoute>}/>
             <Route exact path="/extra-hours" element={<ProtectedRoute><ExtraHour/></ProtectedRoute>}/>
-          
+            <Route exact path="/employee/addemployee" element={<ProtectedRoute><AddEmployee/></ProtectedRoute>}/>
+            <Route exact path="/extra-hours/addhour" element={<ProtectedRoute><AddHour/></ProtectedRoute>}/>
+            <Route exact path="/employee/editemployee/:id" element={<ProtectedRoute><AddEmployee/></ProtectedRoute>}/>
+            <Route exact path="/extra-hours/editextrahour/:id" element={<ProtectedRoute><AddHour/></ProtectedRoute>}/>
           </Routes>
         </UserAuthContextProvider>
       </Layout>
