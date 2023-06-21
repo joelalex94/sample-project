@@ -44,10 +44,9 @@ const AddOrder = () => {
             const response=docSnap.data();
             form.setFieldsValue({ clientName: response.clientName,clientSource: response.clientSource,orderDate:response.orderDate,deliveryDate:response.deliveryDate,address:response.address,addressInfo:response.addressInfo,status:response.status,notes:response.notes,file: {
                 url:response.fileUrl,
-                uid: '-1',
-                name: response.metadata.name,
-                status: 'done',
-            
+                file: response.metadata.name,
+                size: response.metadata.size,
+                type: response.metadata.contentType,
               },});
             setItems(docSnap.data());
             setOrderDate(docSnap.data().orderDate);
