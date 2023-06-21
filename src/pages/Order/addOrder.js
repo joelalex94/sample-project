@@ -2,14 +2,14 @@ import React,{useState, useEffect} from "react";
 import {useNavigate , useParams} from "react-router-dom";
 import {db, storage} from '../../firebase';
 import { collection, addDoc, getDoc , getDocs, doc} from "firebase/firestore";
-import { getDownloadURL, uploadBytesResumable, ref } from "firebase/storage";
+import { getDownloadURL, uploadBytesResumable, ref,getMetadata } from "firebase/storage";
 import { format, addDays } from 'date-fns';
 import OrderDataService from '../../services/orderservice';
 import { Alert } from "bootstrap";
 
 import Sidebars from '../../components/Sidebar';
 
-import { MenuUnfoldOutlined,MenuFoldOutlined,EditOutlined,DeleteOutlined } from '@ant-design/icons';
+import { MenuUnfoldOutlined,MenuFoldOutlined,EditOutlined,DeleteOutlined ,UploadOutlined} from '@ant-design/icons';
 import { Layout, Menu, theme ,Button ,Card, Table,Space, Input,Form,Row,Col,Select,Upload} from 'antd';
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -29,27 +29,31 @@ const AddOrder = () => {
     const [status, setStatus] = useState('');
     const [notes, setNotes] = useState('');
     const [fileUrl, setFileUrl] = useState('');
+    const [metaData, setMetaData] = useState({});
 
     const [percent, setPercent] = useState(0);
 
     const [message, setMessage] =useState({error : false, msg : ""});
     const {id} = useParams();
-
+    const [form] = Form.useForm();
     const history = useNavigate ();
     const fetchOrder = async (para) => {
        
         try {
             const docSnap = await OrderDataService.getOrder(id);
+            const response=docSnap.data();
+            form.setFieldsValue({ clientName: response.clientName,clientSource: response.clientSource,orderDate:response.orderDate,deliveryDate:response.deliveryDate,address:response.address,addressInfo:response.addressInfo,status:response.status,notes:response.notes,file: {
+                url:response.fileUrl,
+                uid: '-1',
+                name: response.metadata.name,
+                status: 'done',
+            
+              },});
             setItems(docSnap.data());
             setOrderDate(docSnap.data().orderDate);
             setDeliveryDate(docSnap.data().deliveryDate);
-            setClientSource(docSnap.data().clientSource);
-            setClientName(docSnap.data().clientName);
-            setAddress(docSnap.data().address);
-            setAddressInfo(docSnap.data().addressInfo);
-            setStatus(docSnap.data().status);
-            setNotes(docSnap.data().notes);
-            setFile(docSnap.data().file);
+            
+            
            
           } catch (error) {
             console.error ('Error fetching item: ', error);
@@ -57,12 +61,13 @@ const AddOrder = () => {
        
     }
 
-    useEffect(()=>{
+    React.useEffect(()=>{
         if(id !== undefined && id !== ""){
             fetchOrder();
+          
         }
         
-    }, [id])
+    },[id])
 
     
     useEffect(() => {
@@ -86,6 +91,7 @@ const AddOrder = () => {
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
         setFile(selectedFile);
+        console.log(file);
     }
 
     const handleDate = (e) => {
@@ -103,10 +109,17 @@ const AddOrder = () => {
 
     const handleSubmit = async (values) => {
         // e.preventDefault();  
+        console.log(values);
         values.file = fileUrl;
+        values.metadata = metaData;
         console.log(values);
         setMessage("");
+        const { file } = values;
 
+        if (storage.length === 0) {
+            message.error('Firebase is not initialized.');
+            return;
+        }
         // const newOrder = {
         //     file : fileUrl, 
         //     orderDate : orderDate, 
@@ -126,35 +139,43 @@ const AddOrder = () => {
 
             if(id !== undefined && id !== ""){
                 
-                const storageRef = ref(storage, `/files/${file.name}`);
-                
-                // progress can be paused and resumed. It also exposes progress updates.
-                // Receives the storage reference and the file to upload.
-                const uploadTask = uploadBytesResumable(storageRef, file);
-                
-                uploadTask.on(
-                    "state_changed",
-                    (snapshot) => {
-                        const percent = Math.round(
-                            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-                        );
+              
+                    const storageRef = ref(storage, `/files/${file.name}`);
+                    // const storageRef = storage.ref();
+                    // const fileRef = storageRef.child(file.name);
+                    // const uploadTask = fileRef.put(file.originFileObj);
+                    
+                    // progress can be paused and resumed. It also exposes progress updates.
+                    // Receives the storage reference and the file to upload.
+                    const uploadTask = uploadBytesResumable(storageRef, file);
+                    
+                    uploadTask.on(
+                        "state_changed",
+                        (snapshot) => {
+                            const percent = Math.round(
+                                (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                            );
+            
+                            // update progress
+                            setPercent(percent);
+                        },
+                        (err) => console.log(err),
+                        () => {
+                            // download url
+                            getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+                                const uls = url;
+                                setFileUrl(uls);
+                            });
+                            getMetadata(uploadTask.snapshot.ref).then((meta) =>{
+                                setMetaData(meta);
+                            });
+                        }
+                    );
+                    await OrderDataService.updateOrder(id, newOrder);
         
-                        // update progress
-                        setPercent(percent);
-                    },
-                    (err) => console.log(err),
-                    () => {
-                        // download url
-                        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-                            const uls = url;
-                            setFileUrl(uls);
-                        });
-                    }
-                );
-                await OrderDataService.updateOrder(id, newOrder);
-    
-                setMessage({error:false, msg:"New order added successfully!"});
-                history('/order');
+                    setMessage({error:false, msg:"New order added successfully!"});
+                    history('/order');
+                
             }else{
                 if (!file) {
                     alert("Please upload an image first!");
@@ -242,7 +263,7 @@ const AddOrder = () => {
     const {
         token: { colorBgContainer },
       } = theme.useToken();
-    
+    const value='sample';
     return ( 
         <>
             <Sidebars ValueCollapsed={collapsed}/>
@@ -342,20 +363,19 @@ const AddOrder = () => {
                                 </form>
                             </div> */} 
                         <Card title={id !== undefined && id !== "" ? `Edit Order  ${id}` : "Add Order"}>
-                            <Form className="ant-advanced-search-form" onFinish={handleSubmit} >
+                            <Form form={form} className="ant-advanced-search-form" onFinish={handleSubmit}>
                                 <Row gutter={24}>
                                     <Col span={12} key={''} style={{ display:  'block' }}>
                                         <Form.Item 
                                             label="Order Date"
                                             name="orderDate"
-                                            value
                                             rules = {[{
                                                 required: true,
                                                 message: 'Input something!',
                                             }
                                             ]}
                                         >
-                                            <Input placeholder="placeholder" value={orderDate} min={orderDate}  onChange={handleDate} type="date"  />
+                                            <Input placeholder="placeholder"  min={orderDate}   onChange={handleDate} type="date"  />
                                         
                                         </Form.Item>
                                         
@@ -389,7 +409,7 @@ const AddOrder = () => {
                                             }
                                             ]}
                                         >
-                                            <Input placeholder={items !== undefined && items !== "" ? `${items.clientName}` : "Please enter a Client Name"} value={clientName}  onChange={(e) => setClientName(e.target.value)} type="text"/>
+                                            <Input value={value}  onChange={(e) => setClientName(e.target.value)} type="text"/>
                                         
                                         </Form.Item>
                                         
@@ -470,15 +490,16 @@ const AddOrder = () => {
                                     <Col span={12} key={''} style={{ display:  'block' }}>
                                         <Form.Item 
                                             label="Attachments"
-                                            
-                                            rules = {[{
-                                                required: true,
-                                                message: 'Input something!',
-                                            }
-                                            ]}
+                                            name="file"
+                                            rules={[{ required: true, message: 'Please select a file.' }]}
                                         >
-                                            <Input placeholder={items !== undefined && items !== "" ? `${items.fileurl}` : "Please select file"}  value={''} onChange={handleFileChange} type="file"/>
+                                            {/* <Input placeholder={items !== undefined && items !== "" ? `${items.fileurl}` : "Please select file"}  value={''} onChange={handleFileChange} type="file"/> */}
                                             {/* <input type="file" className="form-control" id="attachments" name="attachments"  value={''} onChange={handleFileChange}/> */}
+                                            <Upload defaultFileList={form.getFieldValue('file')} beforeUpload={() => false}>
+                                                <Button icon={<UploadOutlined />} type="primary">
+                                                    Select File
+                                                </Button>
+                                            </Upload>
                                         </Form.Item>
                                         
                                     </Col>
