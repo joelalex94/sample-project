@@ -6,9 +6,11 @@ import ExtraHourDataService from '../../services/extrahourservice';
 import Sidebars from '../../components/Sidebar';
 
 import { MenuUnfoldOutlined,MenuFoldOutlined,EditOutlined,DeleteOutlined } from '@ant-design/icons';
-import { Layout, Menu, theme ,Button ,Card, Table,Space, Input,Form,Row,Col} from 'antd';
+import { Layout, Menu, theme ,Button ,Card, Table,Space, Input,Form,Row,Col,Select} from 'antd';
 
 const { Header, Content, Footer, Sider } = Layout;
+const { Option } = Select;
+const { TextArea } = Input;
 
 const AddHour = () => {
     const [collapsed, setCollapsed] = useState(false);
@@ -25,6 +27,7 @@ const AddHour = () => {
        
         try {
             const docSnap = await ExtraHourDataService.getExtraHour(id);
+            setExtraHours(docSnap.data());
             console.log(docSnap.data());
             setClientName(docSnap.data().clientName);
             setOrderDate(docSnap.data().orderDate);
@@ -43,16 +46,17 @@ const AddHour = () => {
         
     }, [id])
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();  
+    const handleSubmit = async (values) => {
+        // e.preventDefault();  
         setMessage("");
 
-        const newExtraHour = {
-            clientName : clientName, 
-            orderDate: orderDate,
-            hours : hours, 
+        // const newExtraHour = {
+        //     clientName : clientName, 
+        //     orderDate: orderDate,
+        //     hours : hours, 
             
-        }
+        // }
+        const newExtraHour = values
 
         try{
 
@@ -104,22 +108,48 @@ const AddHour = () => {
 
             
                 <Content>
-                <h2>{id !== undefined && id !== "" ? `Edit Extra HOur  ${id}` : "Add Extra Hours"}</h2>
-                    <form onSubmit={handleSubmit}>
-
+                {/* <h2>{id !== undefined && id !== "" ? `Edit Extra HOur  ${id}` : "Add Extra Hours"}</h2> */}
+                <Card title={id !== undefined && id !== "" ? `Edit Hours  ${id}` : "Add Hours"}>
+                    <Form  onFinish={handleSubmit} >
+                    
                         <Row gutter={[16, 16]}>
                             <Col xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <input type="date" className="form-control" id="orderDate" name="orderDate" value={orderDate} onChange={(e) => setOrderDate(e.target.value)} />
+                            {/* <input type="date" className="form-control" id="orderDate" name="orderDate" value={orderDate} onChange={(e) => setOrderDate(e.target.value)} /> */}
+                            <Form.Item 
+                                label="Order Date"
+                                name="orderDate"
+                                value
+                                rules = {[{
+                                    required: true,
+                                    message: 'Input something!',
+                                }
+                                ]}
+                            >
+                                <Input placeholder="placeholder" value={orderDate} min={orderDate}  type="date"  />
+                            
+                            </Form.Item>
                             </Col>
                             
                             <Col xs={12} sm={12} md={12} lg={12} xl={12}>
                             
-                            <select id="clientName" className="form-select" placeholder="Employee Name" name="name" value={clientName} onChange={(e) => setClientName(e.target.value)}>
+                            {/* <select id="clientName" className="form-select" placeholder="Employee Name" name="name" value={clientName} onChange={(e) => setClientName(e.target.value)}>
                             <option> Employee Name </option>
                             <option value="Test1"> Test1 </option>
                             <option value="Test2"> Test2 </option>
                             <option value="Test3"> Test3 </option>
-                            </select>
+                            </select> */}
+                            <Form.Item
+                                name="clientName"
+                                label="Employee Name"
+                                rules={[{ required: true, message: 'Please select name!' }]}
+                                >
+                                <Select placeholder={extraHours !== undefined && extraHours !== "" ? `${extraHours.clientName}` : "Please select a Name"}  value={clientName} >
+                                    <Option value="Test1"> Test1 </Option>
+                                    <Option value="Test2"> Test2</Option>
+                                    <Option value="Test3"> Test3 </Option>
+                                    <Option value="Test4"> Test4 </Option>
+                                </Select>
+                            </Form.Item>
                             </Col>
                         </Row>
                         
@@ -127,7 +157,20 @@ const AddHour = () => {
                         <Row gutter={[16, 16]} className="pt-4">
                             <Col xs={12} sm={12} md={12} lg={12} xl={12}>
                             
-                            <input type="text" className="form-control" id="hours" name="hours" placeholder="Extra Hours" value={hours} onChange={(e) => setHours(e.target.value)} />
+                            {/* <input type="text" className="form-control" id="hours" name="hours" placeholder="Extra Hours" value={hours} onChange={(e) => setHours(e.target.value)} /> */}
+                            <Form.Item 
+                                label="Hours"
+                                name="hours"
+                                rules = {[{
+                                    required: true,
+                                    message: 'Input hours!',
+                                }
+                                ]}
+                            >
+                                
+                                
+                                <Input placeholder={extraHours !== undefined && extraHours !== "" ? `${extraHours.hours}` : "Please enter hours"} value={hours} onChange={(e) => setHours(e.target.value)} rows={4}/>
+                            </Form.Item>
                             
                             </Col>
                             
@@ -135,10 +178,10 @@ const AddHour = () => {
                             <button type="submit" className="btn btn-primary">Save</button>
                             </Col>
                         </Row>
-                    </form>
-                    
-                    </Content>
-            </Layout> 
+                    </Form>
+                    </Card>
+                </Content>
+        </Layout> 
 
     </>
     );
