@@ -7,9 +7,10 @@ import DataTable from "react-data-table-component";
 import Sidebars from '../../components/Sidebar';
 
 import { MenuUnfoldOutlined,MenuFoldOutlined,EditOutlined,DeleteOutlined } from '@ant-design/icons';
-import { Layout, Menu, theme ,Button ,Card, Table,Space, Input,Form,Row,Col} from 'antd';
+import { Layout, Menu, theme ,Button ,Card, Table,Space, Input,Form,Row,Col,Select} from 'antd';
 
 const { Header, Content, Footer, Sider } = Layout;
+const { Option } = Select;
 
 const Employee = () => {
     const [collapsed, setCollapsed] = useState(false);
@@ -198,14 +199,10 @@ const Employee = () => {
                     <Space>
                         <Form className="ant-advanced-search-form" >
                             <Row gutter={24}>
-                                <Col span={24} key={''} style={{ display:  'block' }}>
+                                <Col xs={12} sm={12} md={12} lg={12} xl={12} key={''} style={{ display:  'block' }}>
                                     <Form.Item 
                                         label="Search Client Name"
-                                        rules = {[{
-                                            required: true,
-                                            message: 'Input something!',
-                                        }
-                                        ]}
+                                        
                                     >
                                         <Input 
                                             placeholder="search client name"
@@ -213,6 +210,22 @@ const Employee = () => {
                                             onChange={(e) => setSearch(e.target.value)}
                                         />
                                     </Form.Item>
+                                </Col>
+
+                                <Col xs={12} sm={12} md={12} lg={12} xl={12}  key={''} style={{ display:  'block' }}>
+                            
+                                <Form.Item
+                                    name="designation"
+                                    label="Designation"
+                                    
+                                    >
+                                    <Select placeholder="select a designation"  value={searchDesignation} onChange={(e) => setSearchDesignation(e.target.value)}>
+                                        <Option value="Test1"> Test1 </Option>
+                                        <Option value="Test2"> Test2</Option>
+                                        <Option value="Test3"> Test3 </Option>
+                                        <Option value="Test4"> Test4 </Option>
+                                    </Select>
+                                </Form.Item>
                                 </Col>
                             </Row>
                         </Form>
