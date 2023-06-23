@@ -1,15 +1,15 @@
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import {db} from '../../firebase';
 import { useState ,useEffect  } from 'react';
 import {Link} from "react-router-dom";
 import ExtraHourDataService from '../../services/extrahourservice';
-import DataTable from "react-data-table-component";
+// import DataTable from "react-data-table-component";
 import Sidebars from '../../components/Sidebar';
 
 import { MenuUnfoldOutlined,MenuFoldOutlined,EditOutlined,DeleteOutlined } from '@ant-design/icons';
-import { Layout, Menu, theme ,Button ,Card, Table,Space, Input,Form,Row,Col} from 'antd';
+import { Layout, theme ,Button ,Card, Table,Space, Input,Form,Row,Col} from 'antd';
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Header, Content } = Layout;
 
 const ExtraHour = () => {
     const [collapsed, setCollapsed] = useState(false);
@@ -79,6 +79,14 @@ const ExtraHour = () => {
     const {
         token: { colorBgContainer },
       } = theme.useToken();
+
+    const searchDate = async(value) => {
+        const q = query(collection(db, "extraHours"),where('orderDate','==',value));
+            const querySnapshot = await getDocs(q);
+            const response = querySnapshot.docs
+                .map((doc,index) => ({...doc.data(), id:doc.id, key:index+1}));       
+                setFilterExtraHours(response);   
+    }
 
     return ( 
         // <>
@@ -176,14 +184,10 @@ const ExtraHour = () => {
                     <Space>
                         <Form className="ant-advanced-search-form" >
                             <Row gutter={24}>
-                                <Col span={24} key={''} style={{ display:  'block' }}>
+                                <Col  xs={12} sm={12} md={12} lg={12} xl={12} key={''} style={{ display:  'block' }}>
                                     <Form.Item 
                                         label="Search Client Name"
-                                        rules = {[{
-                                            required: true,
-                                            message: 'Input something!',
-                                        }
-                                        ]}
+                                        
                                     >
                                         <Input 
                                             placeholder="search client name"
@@ -191,6 +195,17 @@ const ExtraHour = () => {
                                             onChange={(e) => setSearch(e.target.value)}
                                         />
                                     </Form.Item>
+                                </Col>
+                                <Col xs={12} sm={12} md={12} lg={12} xl={12}>
+                                
+                                <Form.Item 
+                                    label="Order Date"
+                                    name="orderDate"
+                                    
+                                >
+                                    <Input placeholder="placeholder" onChange={(e) => searchDate(e.target.value)} type="date"  />
+                                
+                                </Form.Item>
                                 </Col>
                             </Row>
                         </Form>

@@ -1,4 +1,4 @@
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import {db} from '../../firebase';
 import { useState ,useEffect  } from 'react';
 import {Link} from "react-router-dom";
@@ -84,7 +84,7 @@ const Employee = () => {
             setFilterEmployees(result);
         }
         
-    }, [searchDesignation])
+    }, [])
 
     const deleteHandler = async (id) => {
          await EmployeeDataService.deleteEmployee(id);
@@ -94,6 +94,17 @@ const Employee = () => {
     const {
         token: { colorBgContainer },
       } = theme.useToken();
+
+      const filterDesignation = async (value) => {
+        console.log(value);
+        setSearchDesignation(value);
+        const q = query(collection(db, "employees"),where('designation','==',value));
+            const querySnapshot = await getDocs(q);
+            const response = querySnapshot.docs
+                .map((doc,index) => ({...doc.data(), id:doc.id, key:index+1}));       
+                setFilterEmployees(response);           
+                console.log(response);
+      } 
 
     return ( 
         // <>
@@ -215,11 +226,11 @@ const Employee = () => {
                                 <Col xs={12} sm={12} md={12} lg={12} xl={12}  key={''} style={{ display:  'block' }}>
                             
                                 <Form.Item
-                                    name="designation"
+                                    name="searchDesignation"
                                     label="Designation"
                                     
                                     >
-                                    <Select placeholder="select a designation"  value={searchDesignation} onChange={(e) => setSearchDesignation(e.target.value)}>
+                                    <Select placeholder="select a designation"  onChange={ filterDesignation}>
                                         <Option value="Test1"> Test1 </Option>
                                         <Option value="Test2"> Test2</Option>
                                         <Option value="Test3"> Test3 </Option>
@@ -232,7 +243,7 @@ const Employee = () => {
                         <Form className="ant-advanced-search-form" onFinish={filteremployees} >
                             <Row gutter={24}>
                             
-                            <Col span={8}style={{ display:  'block' }} >
+                            <Col span={4}style={{ display:  'block' }} >
                                 <Button type="primary" htmlType="submit">Search</Button>
                                 
                             </Col>

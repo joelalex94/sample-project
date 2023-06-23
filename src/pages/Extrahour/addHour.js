@@ -21,6 +21,7 @@ const AddHour = () => {
 
     const [message, setMessage] =useState({error : false, msg : ""});
     const {id} = useParams();
+    const [form] = Form.useForm();
 
     const history = useNavigate ();
     const fetchExtraHour = async (para) => {
@@ -29,6 +30,8 @@ const AddHour = () => {
             const docSnap = await ExtraHourDataService.getExtraHour(id);
             setExtraHours(docSnap.data());
             console.log(docSnap.data());
+            const response=docSnap.data();
+            form.setFieldsValue({ clientName: response.clientName,orderDate: response.orderDate,hours:response.hours });
             setClientName(docSnap.data().clientName);
             setOrderDate(docSnap.data().orderDate);
             setHours(docSnap.data().hours);
@@ -39,7 +42,7 @@ const AddHour = () => {
        
     }
 
-    useEffect(()=>{
+    React.useEffect(()=>{
         if(id !== undefined && id !== ""){
             fetchExtraHour();
         }
@@ -110,7 +113,7 @@ const AddHour = () => {
                 <Content>
                 {/* <h2>{id !== undefined && id !== "" ? `Edit Extra HOur  ${id}` : "Add Extra Hours"}</h2> */}
                 <Card title={id !== undefined && id !== "" ? `Edit Hours  ${id}` : "Add Hours"}>
-                    <Form  onFinish={handleSubmit} >
+                    <Form  form={form} onFinish={handleSubmit} >
                     
                         <Row gutter={[16, 16]}>
                             <Col xs={12} sm={12} md={12} lg={12} xl={12}>

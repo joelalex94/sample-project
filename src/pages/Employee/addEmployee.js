@@ -22,14 +22,17 @@ const AddEmployee = () => {
 
     const [message, setMessage] =useState({error : false, msg : ""});
     const {id} = useParams();
+    const [form] = Form.useForm();
 
     const history = useNavigate ();
     const fetchEmployee = async (para) => {
        
         try {
             const docSnap = await EmployeeDataService.getEmployee(id);
+            
             setEmployees(docSnap.data());
-            console.log(docSnap.data());
+            const response=docSnap.data();
+            form.setFieldsValue({ clientName: response.clientName,designation: response.designation,phone:response.phone });
             setClientName(docSnap.data().clientName);
             setDesignation(docSnap.data().designation);
             setPhone(docSnap.data().phone);
@@ -40,7 +43,7 @@ const AddEmployee = () => {
        
     }
 
-    useEffect(()=>{
+    React.useEffect(()=>{
         if(id !== undefined && id !== ""){
             fetchEmployee();
         }
@@ -111,7 +114,7 @@ const AddEmployee = () => {
                 <Content>
                 {/* <h2>{id !== undefined && id !== "" ? `Edit Employee  ${id}` : "Add Employee"}</h2> */}
                 <Card title={id !== undefined && id !== "" ? `Edit Employee  ${id}` : "Add Employee"}>
-                    <Form  onFinish={handleSubmit} >
+                    <Form form={form}  onFinish={handleSubmit} >
                         <Row gutter={[16, 16]}>
                             <Col xs={12} sm={12} md={12} lg={12} xl={12}  key={''} style={{ display:  'block' }}>
                             {/* <input type="text" className="form-control" id="clientName" name="clientName" placeholder="Full Name" value={clientName} onChange={(e) => setClientName(e.target.value)} /> */}
