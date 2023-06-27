@@ -11,11 +11,11 @@ import DataTable from "react-data-table-component";
 import Sidebars from '../../components/Sidebar';
 
 import { MenuUnfoldOutlined,MenuFoldOutlined,EditOutlined,DeleteOutlined } from '@ant-design/icons';
-import { Layout, Menu, theme ,Button ,Card, Table,Space, Input,Form,Row,Col} from 'antd';
+import { Layout, Menu, theme ,Button ,Card, Table,Space, Input,Form,Row,Col,Select} from 'antd';
 
 const { Header, Content, Footer, Sider } = Layout;
 
-
+const { Option } = Select;
 
 
 const Order = () => {
@@ -54,15 +54,15 @@ const Order = () => {
       
     // ];
     const columns = [
-        {title : "No", dataIndex:"key",},
-        {title : "Order Date", dataIndex:"orderDate",align:"center",showOnResponse: true,showOnDesktop: true , sorter: (a,b) => a.orderDate.length - b.orderDate.length},
-        {title : "Delivery Date", dataIndex:"deliveryDate",align:"center",showOnResponse: true,showOnDesktop: true, sorter: (a,b) => a.deliveryDate.length - b.deliveryDate.length},
-        {title : "Client Name", dataIndex:"clientName",align:"center",showOnResponse: true,showOnDesktop: true, sorter: (a,b) => a.clientName.length - b.clientName.length},
-        {title : "Client Source", dataIndex:"clientSource",align:"center",showOnResponse: true,showOnDesktop: true, sorter: (a,b) => a.clientSource.length - b.clientSource.length},
-        {title : "Address", dataIndex:"address",align:"center",showOnResponse: true,showOnDesktop: true},
-        {title : "Address Info", dataIndex:"addressInfo",align:"center",showOnResponse: true,showOnDesktop: true},
-        {title : "Status", dataIndex:"status",align:"center",showOnResponse: true,showOnDesktop: true, sorter: (a,b) => a.status.length - b.status.length},
-        {title : "Notes", dataIndex:"notes",align:"center",showOnResponse: true,showOnDesktop: true},
+        {title : "No", dataIndex:"key",key: 'no'},
+        {title : "Order Date", dataIndex:"orderDate",align:"center",showOnResponse: true,showOnDesktop: true , sorter: (a,b) => a.orderDate.length - b.orderDate.length,key: 'orderDate'},
+        {title : "Delivery Date", dataIndex:"deliveryDate",align:"center",showOnResponse: true,showOnDesktop: true, sorter: (a,b) => a.deliveryDate.length - b.deliveryDate.length,key: 'deliveryDate'},
+        {title : "Client Name", dataIndex:"clientName",align:"center",showOnResponse: true,showOnDesktop: true, sorter: (a,b) => a.clientName.length - b.clientName.length,key: 'clientname'},
+        {title : "Client Source", dataIndex:"clientSource",align:"center",showOnResponse: true,showOnDesktop: true, sorter: (a,b) => a.clientSource.length - b.clientSource.length,key: 'clientSource'},
+        {title : "Address", dataIndex:"address",align:"center",showOnResponse: true,showOnDesktop: true,key: 'address'},
+        {title : "Address Info", dataIndex:"addressInfo",align:"center",showOnResponse: true,showOnDesktop: true,key: 'addressInfo'},
+        {title : "Status", dataIndex:"status",align:"center",showOnResponse: true,showOnDesktop: true, sorter: (a,b) => a.status.length - b.status.length,key: 'status'},
+        {title : "Notes", dataIndex:"notes",align:"center",showOnResponse: true,showOnDesktop: true,key: 'notes'},
         {title : "Action", key:"action",align:"center", render: (action) => (<Space size="middle">  <Link to={`/order/editorder/${action.id}`}><button type="button" className="btn btn-secondary m-1"><EditOutlined /></button></Link> <button type="button" className="btn btn-danger m-1"  onClick={(e) => deleteHandler(action.id)}><DeleteOutlined /></button></Space>),},
         // {   
         //     name:"Action",
@@ -127,10 +127,10 @@ const Order = () => {
         
     }, [searchStatus])
 
-    const filterData = async () =>{
+    const filterData = async (values) =>{
        
-       
-            const q = query(collection(db, "items"),where('orderDate','>=',startDate));
+            const { category,startDate,endDate} = values;
+            const q = query(collection(db, "items"),where(category,'>=',startDate),where(category,'<=',endDate));
             const querySnapshot = await getDocs(q);
             const response = querySnapshot.docs
                 .map((doc,index) => ({...doc.data(), id:doc.id, key:index+1}));       
@@ -228,6 +228,7 @@ const Order = () => {
                                         <Row gutter={24}>
                                             <Col span={24} key={''} style={{ display:  'block' }}>
                                                 <Form.Item 
+
                                                     label="Search Client Name"
                                                     rules = {[{
                                                         required: true,
@@ -245,46 +246,60 @@ const Order = () => {
                                         </Row>
                                     </Form>
                                     <Form className="ant-advanced-search-form" onFinish={filterData} >
-                                        <Row gutter={24}>
-                                        <Col span={8} key={''} style={{ display:  'block' }}>
-                                            <Form.Item 
-                                                label="Order Date From"
-                                                name={startDate}
-                                                rules = {[{
-                                                    required: true,
-                                                    message: 'Input something!',
-                                                }
-                                                ]}
-                                            >
-                                                <Input placeholder="placeholder" value={startDate} onChange={(e) => setStartDate(e.target.value)} type="date"/>
-                                                
-                                                </Form.Item>
-                                                
-                                            </Col>
-                                            <Col span={8} key={''} style={{ display:  'block' }}>
+                                        <Row gutter={36}>
+                                            <Col span={8} key={'startdate'} style={{ display:  'block' }}>
                                                 <Form.Item 
-                                                    label="Order Date To"
-                                                    name={endDate}
+                                                    label="Order Date From"
+                                                    name="startDate"
                                                     rules = {[{
                                                         required: true,
                                                         message: 'Input something!',
                                                     }
                                                     ]}
                                                 >
-                                                    <Input placeholder="placeholder" value={endDate} onChange={(e) => setEndDate(e.target.value)} type="date"/>
+                                                    <Input placeholder="placeholder" value={startDate} onChange={(e) => setStartDate(e.target.value)} type="date"/>
+                                                    
+                                                </Form.Item>
+                                                
+                                            </Col>
+                                            <Col span={5} key={'enddate'} style={{ display:  'block' }}>
+                                                <Form.Item 
+                                                    label="To"
+                                                    name="endDate"
+                                                    rules = {[{
+                                                        required: true,
+                                                        message: 'Input something!',
+                                                    }
+                                                    ]}
+                                                >
+                                                    <Input placeholder="placeholder" min={startDate} value={endDate} onChange={(e) => setEndDate(e.target.value)} type="date"/>
                                                 
                                                 </Form.Item>
                                                 
                                             </Col>
+                                            <Col span={8} key={'enddate'} style={{ display:  'block' }}>
+                                                <Form.Item
+                                                    name="category"
+                                                    label="Date Category"
+                                                    hasFeedback
+                                                    rules={[{ required: true, message: 'Please select Date Category!' }]}
+                                                    >
+                                                    <Select  >
+                                                        <Option value="orderDate"> Order Date </Option>
+                                                        <Option value="deliveryDate"> Delivery Date</Option>
+                                                      
+                                                    </Select>
+                                                </Form.Item>
+                                            </Col>
                                         
-                                        <Col span={8}style={{ display:  'block' }} >
-                                            <Button type="primary" htmlType="submit">Search</Button>
+                                           
+                                                <Button type="primary" htmlType="submit">Search</Button>
+                                                
                                             
-                                        </Col>
                                         </Row>
                                     </Form>
                                 </Space>
-                                <Table columns={columns} dataSource={filteritems} pagination={{ pageSize: 50 }} bordered scroll={{ x: "50vh" }} size="small"/>
+                                <Table columns={columns}  dataSource={filteritems} pagination={{ pageSize: 50 }} bordered scroll={{ x: "50vh" }} size="small"/>
 
                 </Card>
             
