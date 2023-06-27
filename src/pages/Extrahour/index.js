@@ -17,6 +17,8 @@ const ExtraHour = () => {
     const [extraHours, setExtraHours] = useState([]); 
     const [search, setSearch] = useState(''); 
     const [filterextrahours, setFilterExtraHours] = useState([]); 
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
 
     // const columns = [
     //     {name : "No", selector:(row) => row.no},
@@ -80,14 +82,27 @@ const ExtraHour = () => {
         token: { colorBgContainer },
       } = theme.useToken();
 
-    const searchDate = async(value) => {
-        const q = query(collection(db, "extraHours"),where('orderDate','==',value));
-            const querySnapshot = await getDocs(q);
-            const response = querySnapshot.docs
-                .map((doc,index) => ({...doc.data(), id:doc.id, key:index+1}));       
-                setFilterExtraHours(response);   
-    }
-
+    // const searchDate = async(value) => {
+    //     const q = query(collection(db, "extraHours"),where('orderDate','==',value));
+    //         const querySnapshot = await getDocs(q);
+    //         const response = querySnapshot.docs
+    //             .map((doc,index) => ({...doc.data(), id:doc.id, key:index+1}));       
+    //             setFilterExtraHours(response);   
+    // }
+    const filterData = async () =>{
+       
+       
+        const q = query(collection(db, "extraHours"),where('orderDate','>=',startDate),where('orderDate','<=',endDate));
+        const querySnapshot = await getDocs(q);
+        const response = querySnapshot.docs
+            .map((doc,index) => ({...doc.data(), id:doc.id, key:index+1}));       
+            setFilterExtraHours(response);           
+            console.log(response);
+            
+           
+        alert(response);
+    
+}
     return ( 
         // <>
         //     <div className="container">
@@ -184,7 +199,7 @@ const ExtraHour = () => {
                     <Space>
                         <Form className="ant-advanced-search-form" >
                             <Row gutter={24}>
-                                <Col  xs={12} sm={12} md={12} lg={12} xl={12} key={''} style={{ display:  'block' }}>
+                                <Col  span={24} style={{ display:  'block' }}>
                                     <Form.Item 
                                         label="Search Client Name"
                                         
@@ -196,21 +211,45 @@ const ExtraHour = () => {
                                         />
                                     </Form.Item>
                                 </Col>
-                                <Col xs={12} sm={12} md={12} lg={12} xl={12}>
                                 
-                                <Form.Item 
-                                    label="Order Date"
-                                    name="orderDate"
-                                    
-                                >
-                                    <Input placeholder="placeholder" onChange={(e) => searchDate(e.target.value)} type="date"  />
-                                
-                                </Form.Item>
-                                </Col>
                             </Row>
                         </Form>
-                        <Form className="ant-advanced-search-form" onFinish={filterextrahours} >
+                        <Form className="ant-advanced-search-form" onFinish={filterData} >
                             <Row gutter={24}>
+                            <Col span={8} key={''} style={{ display:  'block' }}>
+                                <Form.Item 
+                                    label="Date From"
+                                    name={startDate}
+                                    rules = {[{
+                                        required: true,
+                                        message: 'Input something!',
+                                    }
+                                    ]}
+                                >
+                                    <Input placeholder="placeholder" value={startDate} onChange={(e) => setStartDate(e.target.value)} type="date"/>
+                                    
+                                    </Form.Item>
+                                    
+                                </Col>
+                                <Col span={8} key={''} style={{ display:  'block' }}>
+                                    <Form.Item 
+                                        label="Date To"
+                                        name={endDate}
+                                        rules = {[{
+                                            required: true,
+                                            message: 'Input something!',
+                                        }
+                                        ]}
+                                    >
+                                        <Input placeholder="placeholder" value={endDate} onChange={(e) => setEndDate(e.target.value)} type="date"/>
+                                    
+                                    </Form.Item>
+                                    
+                                </Col>
+                            
+                            
+                            
+                            
                             
                             <Col span={8}style={{ display:  'block' }} >
                                 <Button type="primary" htmlType="submit">Search</Button>
