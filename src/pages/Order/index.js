@@ -11,7 +11,7 @@ import DataTable from "react-data-table-component";
 import Sidebars from '../../components/Sidebar';
 
 import { MenuUnfoldOutlined,MenuFoldOutlined,EditOutlined,DeleteOutlined } from '@ant-design/icons';
-import { Layout, Menu, theme ,Button ,Card, Table,Space, Input,Form,Row,Col,Select} from 'antd';
+import { Layout, Menu, theme ,Button ,Card, Table,Space, Input,Form,Row,Col,Select,Popconfirm } from 'antd';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -63,7 +63,7 @@ const Order = () => {
         {title : "Address Info", dataIndex:"addressInfo",align:"center",showOnResponse: true,showOnDesktop: true,key: 'addressInfo'},
         {title : "Status", dataIndex:"status",align:"center",showOnResponse: true,showOnDesktop: true, sorter: (a,b) => a.status.length - b.status.length,key: 'status'},
         {title : "Notes", dataIndex:"notes",align:"center",showOnResponse: true,showOnDesktop: true,key: 'notes'},
-        {title : "Action", key:"action",align:"center", render: (action) => (<Space size="middle">  <Link to={`/order/editorder/${action.id}`}><button type="button" className="btn btn-secondary m-1"><EditOutlined /></button></Link> <button type="button" className="btn btn-danger m-1"  onClick={(e) => deleteHandler(action.id)}><DeleteOutlined /></button></Space>),},
+        {title : "Action", key:"action",align:"center", render: (action) => (<Space size="middle">  <Link to={`/order/editorder/${action.id}`}><button type="button" className="btn btn-secondary m-1"><EditOutlined /></button></Link> <Popconfirm title="Delete the order" description="Are you sure to delete this order?" onConfirm={(e) => deleteHandler(action.id)}> <button type="button" className="btn btn-danger m-1" ><DeleteOutlined /></button></Popconfirm></Space>),},
         // {   
         //     name:"Action",
         //     cell: (row ) =>[ 
