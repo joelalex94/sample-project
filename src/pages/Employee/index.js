@@ -7,7 +7,7 @@ import DataTable from "react-data-table-component";
 import Sidebars from '../../components/Sidebar';
 
 import { MenuUnfoldOutlined,MenuFoldOutlined,EditOutlined,DeleteOutlined } from '@ant-design/icons';
-import { Layout, Menu, theme ,Button ,Card, Table,Space, Input,Form,Row,Col,Select, Modal} from 'antd';
+import { Layout, Menu, theme ,Button ,Card, Table,Space, Input,Form,Row,Col,Select, Popconfirm} from 'antd';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { Option } = Select;
@@ -44,7 +44,7 @@ const Employee = () => {
         {title : "Phone", dataIndex:"phone",align:"center",showOnResponse: true,showOnDesktop: true},
         
         
-        {title : "Action", key:"action",align:"center", render: (action) => (<Space size="middle">  <Link to={`/employee/editemployee/${action.id}`}><button type="button" className="btn btn-secondary m-1"><EditOutlined /></button></Link> <button type="button" className="btn btn-danger m-1"  onClick={(e) => deleteHandler(action.id)}><DeleteOutlined /></button></Space>),},
+        {title : "Action", key:"action",align:"center", render: (action) => (<Space size="middle">  <Link to={`/employee/editemployee/${action.id}`}><button type="button" className="btn btn-secondary m-1"><EditOutlined /></button></Link> <Popconfirm title="Delete Employee" description="Are you sure you want to delete this employee?" onConfirm={(e) => deleteHandler(action.id)}> <button type="button" className="btn btn-danger m-1" ><DeleteOutlined /></button></Popconfirm></Space>),},
        
       
     ];

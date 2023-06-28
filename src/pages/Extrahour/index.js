@@ -7,7 +7,7 @@ import ExtraHourDataService from '../../services/extrahourservice';
 import Sidebars from '../../components/Sidebar';
 
 import { MenuUnfoldOutlined,MenuFoldOutlined,EditOutlined,DeleteOutlined } from '@ant-design/icons';
-import { Layout, theme ,Button ,Card, Table,Space, Input,Form,Row,Col} from 'antd';
+import { Layout, theme ,Button ,Card, Table,Space, Input,Form,Row,Col,Popconfirm} from 'antd';
 
 const { Header, Content } = Layout;
 
@@ -44,7 +44,7 @@ const ExtraHour = () => {
         {title : "Hours", dataIndex:"hours",align:"center",showOnResponse: true,showOnDesktop: true},
         
         
-        {title : "Action", key:"action",align:"center", render: (action) => (<Space size="middle">  <Link to={`/extra-hours/editextrahour/${action.id}`}><button type="button" className="btn btn-secondary m-1"><EditOutlined /></button></Link> <button type="button" className="btn btn-danger m-1"  onClick={(e) => deleteHandler(action.id)}><DeleteOutlined /></button></Space>),},
+        {title : "Action", key:"action",align:"center", render: (action) => (<Space size="middle">  <Link to={`/extra-hours/editextrahour/${action.id}`}><button type="button" className="btn btn-secondary m-1"><EditOutlined /></button></Link> <Popconfirm title="Delete extra hour" description="Are you sure to delete this entry?" onConfirm={(e) => deleteHandler(action.id)}> <button type="button" className="btn btn-danger m-1" ><DeleteOutlined /></button></Popconfirm></Space>),},
        
       
     ];
